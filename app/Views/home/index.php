@@ -1,6 +1,13 @@
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+$isLoggedIn = isset($_SESSION['user']);
+?>
+
 <?php require_once __DIR__ . '/../layout/header.php'; ?>
 
-<link rel="stylesheet" href="/../assets/css/homepage.css">
+<link rel="stylesheet" href="/assets/css/homepage.css">
 
 <section class="hero">
     <div class="hero-content">
@@ -11,30 +18,40 @@
                 <span>Made Simple</span>
             </h1>
 
-            <p>
-                Book appointments, manage doctors, and streamline patient care
-                with a secure and modern clinic management system.
-            </p>
+            <?php if (!$isLoggedIn): ?>
+                <!-- LANDING PAGE TEXT -->
+                <p>
+                    Book appointments, manage doctors, and streamline patient care
+                    with a secure and modern clinic management system.
+                </p>
 
-            <div class="hero-actions">
-                <a href="/auth/register" class="btn primary">Get Started</a>
-                <a href="/auth/login" class="btn secondary">Login</a>
-            </div>
+                <div class="hero-actions">
+                    <a href="/auth/register" class="btn primary">Get Started</a>
+                    <a href="/auth/login" class="btn secondary">Login</a>
+                </div>
+            <?php else: ?>
+                <!-- PATIENT LOGGED-IN TEXT -->
+                <p>
+                    Take control of your healthcare with ease. Book appointments seamlessly,
+                    consult trusted doctors, and manage your medical information securely —
+                    all through a patient-friendly system designed to deliver a smooth and
+                    stress-free healthcare experience.
+                </p>
+            <?php endif; ?>
         </div>
 
         <div class="hero-visual">
             <img
-                src="/../assets/images/doctor.jpg"
-                alt="Happy doctor with patients"
+                src="/assets/images/doctor.jpg"
+                alt="Happy doctor"
                 class="hero-image">
         </div>
-
 
     </div>
 </section>
 
 <section class="info-section">
-    <h2> Clinic Information</h2>
+    <h2>Clinic Information</h2>
     <p>
         WellCare Clinic provides calm, clean, and patient-focused healthcare
         with modern tools for doctors and staff.
@@ -80,7 +97,7 @@
     <div class="doctors-grid">
 
         <div class="doctor-card" data-specialization="cardiology">
-            <img src="/../assets/images/female_doctor.jpeg">
+            <img src="/../assets/images/female_doctor.jpeg" alt="Dr. Anjali Sharma">
             <div class="doctor-info">
                 <h3>Dr. Anjali Sharma</h3>
                 <span>Cardiologist</span>
@@ -89,7 +106,7 @@
         </div>
 
         <div class="doctor-card" data-specialization="dermatology">
-            <img src="/../assets/images/male_doctor.jpeg">
+            <img src="/../assets/images/male_doctor.jpeg" alt="Dr. Rohan Mehta">
             <div class="doctor-info">
                 <h3>Dr. Rohan Mehta</h3>
                 <span>Dermatologist</span>
@@ -98,7 +115,7 @@
         </div>
 
         <div class="doctor-card" data-specialization="orthopedics">
-            <img src="/../assets/images/female_doctor.jpeg">
+            <img src="/../assets/images/female_doctor.jpeg" alt="Dr. Neha Kapoor">
             <div class="doctor-info">
                 <h3>Dr. Neha Kapoor</h3>
                 <span>Orthopedic Surgeon</span>
@@ -107,7 +124,7 @@
         </div>
 
         <div class="doctor-card" data-specialization="general">
-            <img src="/../assets/images/male_doctor.jpeg">
+            <img src="/../assets/images/male_doctor.jpeg" alt="Dr. Amit Verma">
             <div class="doctor-info">
                 <h3>Dr. Amit Verma</h3>
                 <span>General Physician</span>
@@ -119,4 +136,5 @@
 </section>
 
 <script src="/../assets/js/doctor_filter.js"></script>
+
 <?php require_once __DIR__ . '/../layout/footer.php'; ?>

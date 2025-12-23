@@ -5,6 +5,7 @@
     <link rel="stylesheet" href="/../assets/css/auth.css">
 </head>
 <body>
+<?php require_once __DIR__ . '/../layout/header.php'; ?>
 
 <div class="auth-wrapper">
     <div class="auth-container">
@@ -22,12 +23,13 @@
         </form>
 
         <div class="auth-footer">
-            Don’t have an account?
+            Don't have an account?
             <a href="/auth/register">Register</a>
         </div>
 
     </div>
 </div>
-
+<script src="/../assets/js/auth_validations.js"></script>
+<?php require_once __DIR__ . '/../layout/footer.php'; ?>
 </body>
 </html>

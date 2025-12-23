@@ -76,6 +76,12 @@ body {
     margin-bottom: 12px;
     font-size: 14px;
 }
+.inline-error {
+    margin-top: 4px;
+    font-size: 13px;
+    color: #d63031;
+    display: none;
+}
 
 /* FOOTER TEXT */
 .auth-footer {

@@ -29,14 +29,6 @@ class PatientController extends Controller
         $this->user = $_SESSION['user'];
     }
 
-    /*  DASHBOARD  */
-    public function dashboard()
-    {
-        $this->view('patient/dashboard', [
-            'user' => $this->user
-        ]);
-    }
-
     /*  PROFILE  */
     public function profile()
     {

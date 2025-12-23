@@ -37,6 +37,6 @@
 
     </div>
 </div>
-
+<script src="/../assets/js/auth_validations.js"></script>
 </body>
 </html>

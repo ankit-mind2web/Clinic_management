@@ -56,6 +56,26 @@ class AuthController extends Controller
 
         $this->view('auth/register');
     }
+    /* email check */
+    public function checkEmail()
+    {
+        header('Content-Type: application/json');
+
+        $data = json_decode(file_get_contents('php://input'), true);
+        $email = trim($data['email'] ?? '');
+
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            echo json_encode(['exists' => false]);
+            return;
+        }
+
+        $authService = new AuthService();
+        $exists = $authService->emailExists($email);
+
+        echo json_encode(['exists' => $exists]);
+    }
+
+
 
     /* ================= LOGIN ================= */
     public function login()

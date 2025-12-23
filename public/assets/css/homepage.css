@@ -1,14 +1,14 @@
-/* ===== WRAPPER ===== */
+/*  WRAPPER  */
 .landing-wrapper{
     max-width:1100px;
     margin:auto;
     padding:30px 16px;
 }
 
-/* ===== HERO ===== */
+/*  HERO  */
 .hero{
-    background:#f9fbfa;
-    padding:80px 20px;
+    background:#ffffff;
+    /* padding:80px 20px; */
 }
 
 .hero-content{
@@ -61,7 +61,7 @@
     color:#4caf8f;
 }
 
-/* ===== HERO IMAGE ===== */
+/*  HERO IMAGE  */
 .hero-visual{
     display:flex;
     justify-content:center;
@@ -74,7 +74,7 @@
     height:auto;
 }
 
-/* ===== INFO ===== */
+/*  INFO  */
 .info-section{
     text-align:center;
     padding:60px 20px;
@@ -91,7 +91,7 @@
     color:#555;
 }
 
-/* ===== FEATURES ===== */
+/*  FEATURES  */
 .features{
     max-width:1200px;
     margin:40px auto 80px;
@@ -128,7 +128,7 @@
     box-shadow: 0 14px 30px rgba(0,0,0,0.12);
 }
 
-/* ===== DOCTORS ===== */
+/*  DOCTORS  */
 .doctors-section{
     max-width:1200px;
     margin:80px auto;
@@ -204,7 +204,7 @@
 
 
 
-/* ===== RESPONSIVE ===== */
+/*  RESPONSIVE  */
 @media(max-width:900px){
     .hero-content{
         grid-template-columns:1fr;

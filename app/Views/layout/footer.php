@@ -23,11 +23,10 @@
         <!-- QUICK LINKS -->
         <div class="footer-col">
             <h4>Quick Links</h4>
-            <p><a href="/">Home</a></p>
             <p><a href="/doctors">Our Doctors</a></p>
             <p><a href="/services">Services</a></p>
-            <p><a href="/auth/login">Login</a></p>
-            <p><a href="/auth/register">Register</a></p>
+            <p><a href="/appointments">appointments</a></p>
+
         </div>
 
         <!-- MAP -->

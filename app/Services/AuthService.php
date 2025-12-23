@@ -1,17 +1,26 @@
 <?php
+
 namespace App\Services;
 
+use App\Core\Database;
 use App\Models\User;
+use PDO;
 
 class AuthService
 {
-    
-    // Register a new user
+    private PDO $db;
+
+    public function __construct()
+    {
+        $this->db = Database::getConnection();
+    }
+
+    /* ================= REGISTER ================= */
     public function register(array $data): bool
     {
         $userModel = new User();
 
-        // check duplicate
+        // check duplicate email or mobile
         if ($userModel->exists($data['email'], $data['mobile'])) {
             return false;
         }
@@ -25,9 +34,18 @@ class AuthService
         return true;
     }
 
-    /**
-     * Login user
-     */
+    /* ================= EMAIL EXISTS (AJAX CHECK) ================= */
+    public function emailExists(string $email): bool
+    {
+        $sql = "SELECT id FROM users WHERE email = :email LIMIT 1";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue(':email', $email, PDO::PARAM_STR);
+        $stmt->execute();
+
+        return $stmt->fetch() !== false;
+    }
+
+    /* ================= LOGIN ================= */
     public function login(string $login, string $password): ?array
     {
         $userModel = new User();

@@ -1,5 +1,6 @@
 <?php
 
+use App\Controllers\AdminController;
 use App\Controllers\AuthController;
 use App\Controllers\HomeController;
 use App\Controllers\PatientController;
@@ -20,16 +21,20 @@ $routes = [
         '/'              => [HomeController::class, 'index'],
         '/auth/login'    => [AuthController::class, 'login'],
         '/auth/register' => [AuthController::class, 'register'],
-        '/logout'        => [AuthController::class, 'logout'],
+        '/auth/logout'   => [AuthController::class, 'logout'],
+        
+        //admin dashboard
+        '/admin/dashboard' => [AdminController::class, 'dashboard'],
 
         //patient dashboard
-        '/patient/dashboard'=> [PatientController::class, 'dashboard'],
+        '/patient/dashboard'=> [HomeController::class, 'index'],
         '/patient/profile'  => [PatientController::class, 'profile'],
         '/patient/appointment'=>[PatientController::class, 'appointments']
     ],
     'POST' => [
         '/auth/login'    => [AuthController::class, 'login'],
         '/auth/register' => [AuthController::class, 'register'],
+        '/auth/check-email' => [AuthController::class, 'checkEmail'],
     ]
 
 ];
