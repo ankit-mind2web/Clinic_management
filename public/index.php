@@ -1,9 +1,13 @@
 <?php
 
-use App\Controllers\AdminController;
+use App\Controllers\Admin\AppointmentController;
 use App\Controllers\AuthController;
+use App\Controllers\Admin\DashboardController;
+use App\Controllers\Admin\DoctorController;
+use App\Controllers\Admin\SpecializationController;
 use App\Controllers\HomeController;
-use App\Controllers\PatientController;
+use App\Controllers\Patient\PatientController;
+use App\Controllers\Patient\ProfileController;
 
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
@@ -22,19 +26,50 @@ $routes = [
         '/auth/login'    => [AuthController::class, 'login'],
         '/auth/register' => [AuthController::class, 'register'],
         '/auth/logout'   => [AuthController::class, 'logout'],
-        
+
         //admin dashboard
-        '/admin/dashboard' => [AdminController::class, 'dashboard'],
+        '/admin/dashboard' => [DashboardController::class, 'index'],
+        '/admin/doctors'    => [DoctorController::class, 'index'],
+        '/admin/doctors/pending'  => [DoctorController::class, 'pending'],
+        '/admin/doctors/view' => [DoctorController::class, 'show'],
+
+
+        //appointment
+        '/admin/appointments'      => [AppointmentController::class, 'index'],
+        '/admin/appointments/view' => [AppointmentController::class, 'show'],
+
+        //specialization
+        '/admin/specializations'        => [SpecializationController::class, 'index'],
+        '/admin/specializations/create' => [SpecializationController::class, 'create'],
+        '/admin/specializations/edit'   => [SpecializationController::class, 'edit'],
+        '/admin/specializations/delete' => [SpecializationController::class, 'delete'],
+
+        //doctor
+        '/doctor/dashboard'        => [DashboardController::class, 'index'],
+        '/doctor/appointments'     => [AppointmentController::class, 'index'],
+        '/doctor/appointments/view' => [AppointmentController::class, 'show'],
+
+
 
         //patient dashboard
-        '/patient/dashboard'=> [HomeController::class, 'index'],
-        '/patient/profile'  => [PatientController::class, 'profile'],
-        '/patient/appointment'=>[PatientController::class, 'appointments']
+        '/patient/dashboard'         => [HomeController::class, 'index'],
+        '/patient/appointment'       => [PatientController::class, 'appointments'],
+        '/patient/profile'           => [ProfileController::class, 'index'],
+        '/auth/verify-email'         => [AuthController::class, 'verifyEmail'],
+
+
     ],
     'POST' => [
         '/auth/login'    => [AuthController::class, 'login'],
         '/auth/register' => [AuthController::class, 'register'],
         '/auth/check-email' => [AuthController::class, 'checkEmail'],
+
+        //doctor-admin
+        '/admin/doctors/approve'  => [DoctorController::class, 'approve'],
+        '/admin/doctors/block'    => [DoctorController::class, 'block'],
+
+        '/patient/profile' => [ProfileController::class, 'index'],
+        '/profile/send-verification' => [ProfileController::class, 'sendVerification'],
     ]
 
 ];

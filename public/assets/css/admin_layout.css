@@ -1,0 +1,144 @@
+/* RESET */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+
+body {
+    background: #f4f6fb;
+}
+
+/* WRAPPER */
+.admin-wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* SIDEBAR */
+.sidebar {
+    width: 250px;
+    background: #2f3e52;
+    color: #fff;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    padding: 20px 0;
+}
+
+.sidebar .logo {
+    font-size: 22px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.sidebar ul {
+    list-style: none;
+}
+
+.sidebar ul li a {
+    display: block;
+    padding: 12px 20px;
+    color: #cfd8e3;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.sidebar ul li a:hover,
+.sidebar ul li a.active {
+    background: #1f2a38;
+    color: #fff;
+}
+
+/* MAIN AREA */
+.main {
+    margin-left: 250px;
+    padding: 25px;
+    flex: 1;
+}
+
+/* ===============================
+   SIDEBAR DROPDOWN
+================================ */
+
+.nav li {
+    list-style: none;
+}
+
+.nav > li > a {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav .arrow {
+    font-size: 12px;
+    opacity: 0.7;
+}
+
+/* SUB MENU */
+.has-sub .sub-menu {
+    display: none;
+    background: #263445;
+}
+
+.has-sub.open .sub-menu {
+    display: block;
+}
+
+.sub-menu li a {
+    padding: 10px 40px;
+    font-size: 13px;
+    color: #cfd8e3;
+}
+
+.sub-menu li a.active {
+    background: #1f2a38;
+    color: #fff;
+}
+
+/* TOP BAR */
+.topbar {
+    background: #fff;
+    padding: 14px 20px;
+    border-radius: 8px;
+    margin-bottom: 25px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.topbar h2 {
+    font-size: 18px;
+}
+
+/* FOOTER */
+.footer {
+    margin-top: 30px;
+    text-align: center;
+    font-size: 13px;
+    color: #777;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .sidebar {
+        position: relative;
+        width: 100%;
+    }
+
+    .main {
+        margin-left: 0;
+        padding: 15px;
+    }
+
+    .topbar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+}

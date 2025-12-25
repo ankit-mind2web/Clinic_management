@@ -43,7 +43,7 @@ class User extends Model
         return $user ?: null;
     }
 
-    /* Count users by role */
+    /* Count users by role (active only) */
     public function countByRole(string $role): int
     {
         $stmt = $this->db->prepare(
@@ -65,17 +65,37 @@ class User extends Model
         return (int) $stmt->fetchColumn();
     }
 
+    // Doctor management (Admin)
     /* Get all doctors */
     public function getDoctors(): array
     {
-        $stmt = $this->db->query(
-            "SELECT * FROM users WHERE role = 'doctor' ORDER BY id DESC"
+        $stmt = $this->db->prepare(
+            "SELECT id, full_name, email, mobile, status, created_at
+             FROM users
+             WHERE role = 'doctor'
+             ORDER BY id DESC"
         );
+        $stmt->execute();
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    /* Update user status */
+    /* Get pending doctors */
+    public function getPendingDoctors(): array
+    {
+        $stmt = $this->db->prepare(
+            "SELECT id, full_name, email, mobile, created_at
+             FROM users
+             WHERE role = 'doctor'
+               AND status = 'pending'
+             ORDER BY id DESC"
+        );
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /* Update user status (approve / block) */
     public function updateStatus(int $id, string $status): void
     {
         $stmt = $this->db->prepare(

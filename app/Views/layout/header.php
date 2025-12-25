@@ -1,12 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $title ?? 'WellCare Clinic' ?></title>
 
-    <link rel="stylesheet" href="/assets/css/layout.css">
-    <link rel="icon" type="image/png" href="/assets/images/favicon.png">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/layout.css">
+    <link rel="icon" type="image/png" href="<?= BASE_URL ?>/assets/images/favicon.png">
+
+    <!-- SweetAlert -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        window.BASE_URL = "<?= BASE_URL ?>";
+    </script>
 
     <script>
         function toggleMenu() {
@@ -29,8 +36,17 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+
+/*
+ | SESSION STRUCTURE (CONFIRMED)
+ | $_SESSION['user'] = [
+ |   'id',
+ |   'full_name',
+ |   'role'
+ | ]
+ */
 $user = $_SESSION['user'] ?? null;
-$username = $user['name'] ?? '';
+$username = $user['full_name'] ?? ($user['name'] ?? '');
 $initial = $username ? strtoupper($username[0]) : '';
 ?>
 
@@ -41,7 +57,7 @@ $initial = $username ? strtoupper($username[0]) : '';
 
         <!-- LOGO -->
         <div class="logo">
-            <img src="/assets/images/wellcarelogo.png" alt="WellCare Clinic Logo">
+            <img src="<?= BASE_URL ?>/assets/images/wellcarelogo.png" alt="WellCare Clinic Logo">
         </div>
 
         <!-- HAMBURGER -->
@@ -49,46 +65,62 @@ $initial = $username ? strtoupper($username[0]) : '';
 
         <!-- NAV -->
         <nav class="nav" id="navMenu">
-            <a href="/">Home</a>
-            <a href="/services">Services</a>
-            <a href="/contact">Contact</a>
+            <a href="<?= BASE_URL ?>/">Home</a>
+            <a href="<?= BASE_URL ?>/services">Services</a>
+            <a href="<?= BASE_URL ?>/contact">Contact</a>
 
             <?php if ($user): ?>
                 <!-- PROFILE DROPDOWN -->
                 <div class="profile-wrapper">
 
-                    <!-- avatar -->
+                    <!-- Avatar -->
                     <button class="profile-toggle" onclick="toggleProfile(event)">
                         <?= htmlspecialchars($initial) ?>
                     </button>
 
-                    <!-- dropdown -->
+                    <!-- Dropdown -->
                     <div class="profile-dropdown" id="profileDropdown">
 
                         <div class="profile-name">
-                            <img src="/assets/images/user.png" alt="User">
+                            <img src="<?= BASE_URL ?>/assets/images/user.png" alt="User">
                             <?= htmlspecialchars($username) ?>
                         </div>
 
-                        <a href="/patient/profile" class="dropdown-item">
-                            <img src="/assets/images/user-details.png" class="dropdown-icon">
-                            Profile Details
-                        </a>
+                        <?php if ($user['role'] === 'patient'): ?>
+                            <a href="<?= BASE_URL ?>/patient/profile" class="dropdown-item">
+                                <img src="<?= BASE_URL ?>/assets/images/user-details.png" class="dropdown-icon">
+                                Profile Details
+                            </a>
 
-                        <a href="/appointments/create" class="dropdown-item">
-                            <img src="/assets/images/add-user.png" class="dropdown-icon">
-                            Book Appointment
-                        </a>
+                            <a href="<?= BASE_URL ?>/patient/appointment" class="dropdown-item">
+                                <img src="<?= BASE_URL ?>/assets/images/add-user.png" class="dropdown-icon">
+                                Book Appointment
+                            </a>
+                        <?php endif; ?>
 
-                        <a href="/auth/logout" class="dropdown-item">
-                            <img src="/assets/images/quit.png" class="dropdown-icon">
+                        <?php if ($user['role'] === 'doctor'): ?>
+                            <a href="<?= BASE_URL ?>/doctor/dashboard" class="dropdown-item">
+                                <img src="<?= BASE_URL ?>/assets/images/user-details.png" class="dropdown-icon">
+                                Doctor Dashboard
+                            </a>
+                        <?php endif; ?>
+
+                        <?php if ($user['role'] === 'admin'): ?>
+                            <a href="<?= BASE_URL ?>/admin/dashboard" class="dropdown-item">
+                                <img src="<?= BASE_URL ?>/assets/images/user-details.png" class="dropdown-icon">
+                                Admin Dashboard
+                            </a>
+                        <?php endif; ?>
+
+                        <a href="<?= BASE_URL ?>/auth/logout" class="dropdown-item">
+                            <img src="<?= BASE_URL ?>/assets/images/quit.png" class="dropdown-icon">
                             Logout
                         </a>
 
                     </div>
                 </div>
             <?php else: ?>
-                <a href="/auth/login">Login</a>
+                <a href="<?= BASE_URL ?>/auth/login">Login</a>
             <?php endif; ?>
         </nav>
 

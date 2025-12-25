@@ -2,9 +2,20 @@
 <html>
 <head>
     <title>Login</title>
-    <link rel="stylesheet" href="/../assets/css/auth.css">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/auth.css">
+
+    <!-- SweetAlert -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- Expose BASE_URL to JS -->
+    <script>
+        window.BASE_URL = "<?= BASE_URL ?>";
+    </script>
 </head>
 <body>
+
 <?php require_once __DIR__ . '/../layout/header.php'; ?>
 
 <div class="auth-wrapper">
@@ -12,24 +23,25 @@
 
         <h2>Login</h2>
 
-        <?php if (!empty($error)): ?>
-            <div class="auth-error"><?= htmlspecialchars($error) ?></div>
-        <?php endif; ?>
+        <div id="loginError" class="auth-error" style="display:none;"></div>
 
-        <form method="post" action="/auth/login">
-            <input type="text" name="login" placeholder="Email or Mobile">
-            <input type="password" name="password" placeholder="Password">
+        <form id="loginForm">
+            <input type="text" name="login" placeholder="Email or Mobile" required>
+            <input type="password" name="password" placeholder="Password" required>
             <button type="submit">Login</button>
         </form>
 
         <div class="auth-footer">
             Don't have an account?
-            <a href="/auth/register">Register</a>
+            <a href="<?= BASE_URL ?>/auth/register">Register</a>
         </div>
 
     </div>
 </div>
-<script src="/../assets/js/auth_validations.js"></script>
+
+<!-- JS -->
+<script src="<?= BASE_URL ?>/assets/js/login.js"></script>
+
 <?php require_once __DIR__ . '/../layout/footer.php'; ?>
 </body>
 </html>

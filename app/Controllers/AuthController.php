@@ -7,131 +7,201 @@ use App\Services\AuthService;
 
 class AuthController extends Controller
 {
+    private AuthService $authService;
+
     public function __construct()
+    {
+        // start session if not started
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        $this->authService = new AuthService();
+    }
+
+    //  REGISTER 
+    public function register()
+    {
+        // GET request → show register page
+        if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+            $this->view('auth/register');
+            return;
+        }
+
+        // POST request → AJAX only
+        header('Content-Type: application/json');
+        ob_clean();
+
+        // collect inputs
+        $fullName = trim($_POST['full_name'] ?? '');
+        $email    = trim($_POST['email'] ?? '');
+        $mobile   = trim($_POST['mobile'] ?? '');
+        $password = trim($_POST['password'] ?? '');
+        $role     = trim($_POST['role'] ?? '');
+
+        // required field validation
+        if ($fullName === '' || $email === '' || $mobile === '' || $password === '' || $role === '') {
+            echo json_encode(['status' => 'error', 'message' => 'All fields are required']);
+            exit;
+        }
+
+        // role validation
+        if (!in_array($role, ['patient', 'doctor'], true)) {
+            echo json_encode(['status' => 'error', 'message' => 'Invalid role']);
+            exit;
+        }
+
+        // full name validation (letters and spaces, 3–50 chars)
+        if (!preg_match('/^[A-Za-z ]{3,50}$/', $fullName)) {
+            echo json_encode(['status' => 'error', 'message' => 'Invalid full name']);
+            exit;
+        }
+
+        // email format validation
+        if (!preg_match('/^[\w.-]{1,25}@([\w-]+\.)+[\w-]{2,4}$/', $email)) {
+            echo json_encode(['status' => 'error', 'message' => 'Invalid email format']);
+            exit;
+        }
+
+        // mobile validation (exactly 10 digits)
+        if (!preg_match('/^\d{10}$/', $mobile)) {
+            echo json_encode(['status' => 'error', 'message' => 'Invalid mobile number']);
+            exit;
+        }
+
+        // password strength validation
+        if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/', $password)) {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Password must contain uppercase, lowercase, number and special character'
+            ]);
+            exit;
+        }
+
+        // call service to register user
+        $success = $this->authService->register([
+            'full_name' => $fullName,
+            'email'     => $email,
+            'mobile'    => $mobile,
+            'password'  => $password,
+            'role'      => $role
+        ]);
+
+        // duplicate email or mobile
+        if (!$success) {
+            echo json_encode(['status' => 'error', 'message' => 'Email or mobile already exists']);
+            exit;
+        }
+
+        // success response
+        echo json_encode([
+            'status'   => 'success',
+            'redirect' => '/auth/login'
+        ]);
+        exit;
+    }
+
+    //  LOGIN 
+    public function login()
     {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
-    }
 
-    /* ================= REGISTER ================= */
-    public function register()
-    {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
-            $name     = trim($_POST['full_name'] ?? '');
-            $email    = trim($_POST['email'] ?? '');
-            $mobile   = trim($_POST['mobile'] ?? '');
-            $password = trim($_POST['password'] ?? '');
-            $role     = trim($_POST['role'] ?? '');
-
-            if ($name === '' || $email === '' || $mobile === '' || $password === '' || $role === '') {
-                $this->view('auth/register', ['error' => 'All fields are required']);
-                return;
-            }
-
-            if (!in_array($role, ['patient', 'doctor'], true)) {
-                $this->view('auth/register', ['error' => 'Invalid role']);
-                return;
-            }
-
-            $authService = new AuthService();
-
-            $success = $authService->register([
-                'full_name' => $name,
-                'email'     => $email,
-                'mobile'    => $mobile,
-                'password'  => $password,
-                'role'      => $role
-            ]);
-
-            if (!$success) {
-                $this->view('auth/register', ['error' => 'Email or mobile already exists']);
-                return;
-            }
-
-            header("Location: /auth/login");
-            exit;
-        }
-
-        $this->view('auth/register');
-    }
-    /* email check */
-    public function checkEmail()
-    {
-        header('Content-Type: application/json');
-
-        $data = json_decode(file_get_contents('php://input'), true);
-        $email = trim($data['email'] ?? '');
-
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            echo json_encode(['exists' => false]);
+        if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+            $this->view('auth/login');
             return;
         }
 
-        $authService = new AuthService();
-        $exists = $authService->emailExists($email);
+        header('Content-Type: application/json');
 
-        echo json_encode(['exists' => $exists]);
-    }
+        $login    = trim($_POST['login'] ?? '');
+        $password = trim($_POST['password'] ?? '');
 
-
-
-    /* ================= LOGIN ================= */
-    public function login()
-    {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
-            $login    = trim($_POST['login'] ?? '');
-            $password = trim($_POST['password'] ?? '');
-
-            if ($login === '' || $password === '') {
-                $this->view('auth/login', ['error' => 'All fields are required']);
-                return;
-            }
-
-            $authService = new AuthService();
-            $user = $authService->login($login, $password);
-
-            if (!$user) {
-                $this->view('auth/login', ['error' => 'Invalid credentials']);
-                return;
-            }
-
-            if (($user['status'] ?? 'active') !== 'active') {
-                $this->view('auth/login', ['error' => 'Account not active']);
-                return;
-            }
-
-            // security best practice
-            session_regenerate_id(true);
-
-            $_SESSION['user'] = [
-                'id'    => $user['id'],
-                'name'  => $user['full_name'], // IMPORTANT
-                'email' => $user['email'],
-                'role'  => $user['role']
-            ];
-
-            if ($user['role'] === 'admin') {
-                header("Location: /admin/dashboard");
-            } elseif ($user['role'] === 'doctor') {
-                header("Location: /doctor/dashboard");
-            } else {
-                header("Location: /patient/dashboard");
-            }
+        if ($login === '' || $password === '') {
+            echo json_encode(['status' => 'error', 'message' => 'All fields required']);
             exit;
         }
 
-        $this->view('auth/login');
+        $emailRegex  = '/^[a-z0-9._-]{1,25}@([a-z0-9-]+\.)+[a-z]{2,4}$/';
+        $mobileRegex = '/^\d{10}$/';
+
+        if (!preg_match($emailRegex, $login) && !preg_match($mobileRegex, $login)) {
+            echo json_encode(['status' => 'error', 'message' => 'Invalid email or mobile number']);
+            exit;
+        }
+
+        $user = $this->authService->login($login, $password);
+
+        if (!$user) {
+            echo json_encode(['status' => 'error', 'message' => 'Invalid credentials']);
+            exit;
+        }
+
+        $_SESSION['user'] = [
+            'id'             => $user['id'],
+            'full_name'      => $user['full_name'],
+            'email'          => $user['email'],
+            'mobile'         => $user['mobile'],
+            'role'           => $user['role'],
+            'email_verified' => (int)$user['email_verified']
+        ];
+
+        $redirect = match ($user['role']) {
+            'admin'   => '/admin/dashboard',
+            'doctor'  => '/doctor/dashboard',
+            'patient' => '/patient/dashboard',
+            default   => '/'
+        };
+
+        echo json_encode(['status' => 'success', 'redirect' => $redirect]);
+        exit;
     }
 
-    /* ================= LOGOUT ================= */
+
+    // verify email link
+    public function verifyEmail()
+    {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        $token = trim($_GET['token'] ?? '');
+
+        if ($token === '') {
+            header('Location: /');
+            exit;
+        }
+
+        $profileModel = new \App\Models\Profile();
+        $user = $profileModel->verifyEmailByToken($token);
+
+        if (!$user) {
+            header('Location: /');
+            exit;
+        }
+
+        // update session if user is logged in
+        if (isset($_SESSION['user']) && $_SESSION['user']['id'] === $user['id']) {
+            $_SESSION['user']['email_verified'] = 1;
+        }
+
+        header('Location: /patient/profile');
+        exit;
+    }
+
+
+
+
+    //  LOGOUT 
     public function logout()
     {
+        // clear session
         session_unset();
         session_destroy();
-        header("Location: /auth/login");
+
+        // redirect to login
+        header('Location: /auth/login');
         exit;
     }
 }

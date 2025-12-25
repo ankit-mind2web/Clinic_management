@@ -1,0 +1,254 @@
+/* PATIENT PROFILE PAGE */
+.auth-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 40px 15px;
+    background: #f4f7fb;
+    min-height: calc(70vh - 100px);
+}
+
+.auth-container {
+    background: #ffffff;
+    width: 100%;
+    max-width: 520px;
+    padding: 25px 30px;
+    border-radius: 10px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+}
+
+.auth-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #003b95;
+}
+
+/* ALERTS */
+
+.auth-error {
+    background: #fff3f3;
+    border: 1px solid #ffcccc;
+    color: #b30000;
+    padding: 12px 14px;
+    border-radius: 6px;
+    margin-bottom: 15px;
+    font-size: 14px;
+}
+
+.auth-success {
+    background: #f0fff5;
+    border: 1px solid #9ae6b4;
+    color: #0f5132;
+    padding: 12px 14px;
+    border-radius: 6px;
+    margin-bottom: 15px;
+    font-size: 14px;
+    text-align: center;
+}
+
+/* PROFILE TABLE (VIEW MODE) */
+.profile-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* pushes icon to right */
+    margin-bottom: 15px;
+}
+
+.profile-header h2 {
+    margin: 0;
+    color: #003b95;
+}
+
+.edit-profile-icon {
+    margin-left: auto; /* safety push */
+}
+
+.edit-profile-icon img {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    opacity: 0.75;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.edit-profile-icon img:hover {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+
+.profile-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+.profile-header h2 {
+    margin: 0;
+    color: #003b95;
+}
+
+.edit-profile-icon img {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    opacity: 0.75;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.edit-profile-icon img:hover {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+
+.profile-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 15px;
+    font-size: 14px;
+}
+
+.profile-table th {
+    text-align: left;
+    width: 40%;
+    padding: 8px 6px;
+    color: #444;
+    font-weight: 600;
+}
+
+.profile-table td {
+    padding: 8px 6px;
+    color: #333;
+}
+
+.profile-table tr {
+    border-bottom: 1px solid #eee;
+}
+
+/* BUTTONS */
+
+button {
+    background: #0d6efd;
+    color: #fff;
+    border: none;
+    padding: 10px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+button:hover {
+    background: #084298;
+}
+
+button:disabled {
+    background: #9bb7e0;
+    cursor: not-allowed;
+}
+
+/* Edit / Cancel buttons */
+
+.btn-edit {
+    display: inline-block;
+    margin-top: 12px;
+    text-decoration: none;
+    color: #0d6efd;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.btn-edit:hover {
+    text-decoration: underline;
+}
+
+.btn-cancel {
+    margin-left: 10px;
+    text-decoration: none;
+    color: #6c757d;
+    font-size: 14px;
+}
+
+.btn-cancel:hover {
+    text-decoration: underline;
+}
+
+/* EDIT MODE FORM  */
+form label {
+    display: block;
+    margin-top: 12px;
+    font-size: 14px;
+    color: #333;
+    font-weight: 500;
+}
+
+form input,
+form select,
+form textarea {
+    width: 100%;
+    padding: 10px 12px;
+    margin-top: 5px;
+    border: 1px solid #d0d7de;
+    border-radius: 6px;
+    font-size: 14px;
+    background: #fff;
+}
+
+form textarea {
+    resize: vertical;
+}
+
+form input:focus,
+form select:focus,
+form textarea:focus {
+    outline: none;
+    border-color: #0d6efd;
+}
+
+ 
+/* EMAIL VERIFICATION SECTION */
+
+
+.auth-error form {
+    margin-top: 10px;
+}
+
+.auth-error button {
+    width: 100%;
+}
+.verified {
+    align-items: center;
+    gap: 6px;
+    color: #0f5735;
+}
+
+.tick {
+    color: #28a745;    
+    font-size: 16px;
+    font-weight: bold;
+    line-height: 1;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 480px) {
+
+    .auth-container {
+        padding: 20px;
+    }
+
+    .profile-table th,
+    .profile-table td {
+        font-size: 13px;
+    }
+
+    button {
+        width: 100%;
+    }
+
+    .btn-cancel {
+        display: block;
+        margin: 10px 0 0;
+    }
+}

@@ -1,126 +1,91 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Admin Dashboard</title>
-    <style>
-        body{
-            font-family: Arial, sans-serif;
-            background:#f5f6fa;
-            margin:0;
-            padding:20px;
-        }
-        h1{
-            margin-bottom:5px;
-        }
-        .stats{
-            display:grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap:20px;
-            margin:30px 0;
-        }
-        .card{
-            background:#fff;
-            padding:20px;
-            border-radius:8px;
-            box-shadow:0 4px 10px rgba(0,0,0,0.08);
-        }
-        .card h3{
-            margin:0 0 10px;
-            font-size:14px;
-            color:#666;
-        }
-        .card p{
-            font-size:26px;
-            margin:0;
-            font-weight:bold;
-        }
-        table{
-            width:100%;
-            border-collapse:collapse;
-            background:#fff;
-            border-radius:8px;
-            overflow:hidden;
-            box-shadow:0 4px 10px rgba(0,0,0,0.08);
-        }
-        th, td{
-            padding:12px 15px;
-            border-bottom:1px solid #eee;
-            text-align:left;
-        }
-        th{
-            background:#fafafa;
-        }
-        .status{
-            padding:4px 10px;
-            border-radius:12px;
-            font-size:12px;
-        }
-        .status.pending{ background:#fff3cd; color:#856404; }
-        .status.completed{ background:#d4edda; color:#155724; }
-        .status.confirmed{ background:#cce5ff; color:#004085; }
-    </style>
-</head>
-<body>
+<?php
+$title = 'Admin Dashboard';
 
-<h1>Dashboard</h1>
-<p>Here’s what’s happening today</p>
+include __DIR__ . '/../admin/layout/header.php';
+include __DIR__ . '/../admin/layout/sidebar.php';
+?>
 
-<!-- STATS -->
-<div class="stats">
-    <div class="card">
-        <h3>Total Patients</h3>
-        <p><?= $totalPatients ?></p>
+<div class="main">
+
+    <div class="topbar">
+        <h2>Dashboard</h2>
+        <div class="admin">Admin Panel</div>
     </div>
 
-    <div class="card">
-        <h3>Active Doctors</h3>
-        <p><?= $totalDoctors ?></p>
+    <div class="stats">
+        <div class="stat-box bg-green">
+            <h4>TOTAL DOCTORS</h4>
+            <p><?= $totalDoctors ?? 0 ?></p>
+        </div>
+
+        <div class="stat-box bg-purple">
+            <h4>PENDING DOCTORS</h4>
+            <p><?= $pendingDoctors ?? 0 ?></p>
+        </div>
+
+        <div class="stat-box bg-blue">
+            <h4>APPOINTMENTS</h4>
+            <p><?= $totalAppointments ?? 0 ?></p>
+        </div>
+
+        <div class="stat-box bg-orange">
+            <h4>SPECIALIZATIONS</h4>
+            <p><?= $totalSpecializations ?? 0 ?></p>
+        </div>
     </div>
 
-    <div class="card">
-        <h3>Total Appointments</h3>
-        <p><?= $totalAppointments ?></p>
+    <div class="panels">
+
+        <div class="panel">
+            <h3>Recent Appointments</h3>
+            <table class="table">
+                <tr>
+                    <th>Patient</th>
+                    <th>Doctor</th>
+                    <th>Status</th>
+                </tr>
+
+                <?php if (!empty($recentAppointments)): ?>
+                    <?php foreach ($recentAppointments as $row): ?>
+                        <tr>
+                            <td><?= htmlspecialchars($row['patient_name']) ?></td>
+                            <td><?= htmlspecialchars($row['doctor_name']) ?></td>
+                            <td>
+                                <span class="status <?= strtolower($row['status']) ?>">
+                                    <?= ucfirst($row['status']) ?>
+                                </span>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <tr><td colspan="3">No recent appointments</td></tr>
+                <?php endif; ?>
+            </table>
+        </div>
+
+        <div class="panel">
+            <h3>Pending Doctors</h3>
+            <table class="table">
+                <tr>
+                    <th>Name</th>
+                    <th>Status</th>
+                </tr>
+
+                <?php if (!empty($pendingDoctorList)): ?>
+                    <?php foreach ($pendingDoctorList as $doc): ?>
+                        <tr>
+                            <td><?= htmlspecialchars($doc['full_name']) ?></td>
+                            <td><span class="status pending">Pending</span></td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <tr><td colspan="2">No pending doctors</td></tr>
+                <?php endif; ?>
+            </table>
+        </div>
+
     </div>
 
-    <div class="card">
-        <h3>Pending Doctors</h3>
-        <p><?= $pendingDoctors ?></p>
-    </div>
 </div>
 
-<!-- RECENT APPOINTMENTS -->
-<h2>Recent Appointments</h2>
-
-<?php if (!empty($recentAppointments)): ?>
-<table>
-    <thead>
-        <tr>
-            <th>Patient</th>
-            <th>Doctor</th>
-            <th>Start Time</th>
-            <th>Status</th>
-        </tr>
-    </thead>
-    <tbody>
-        <?php foreach ($recentAppointments as $row): ?>
-            <tr>
-                <td><?= htmlspecialchars($row['patient_name']) ?></td>
-                <td><?= htmlspecialchars($row['doctor_name']) ?></td>
-                <td><?= date('d M Y, h:i A', strtotime($row['start_utc'])) ?></td>
-                <td>
-                    <span class="status <?= $row['status'] ?>">
-                        <?= ucfirst($row['status']) ?>
-                    </span>
-                </td>
-            </tr>
-        <?php endforeach; ?>
-    </tbody>
-</table>
-<?php else: ?>
-    <p>No recent appointments.</p>
-<?php endif; ?>
-
-</body>
-</html>
- <!-- #region -->
+<?php include __DIR__ . '/../admin/layout/footer.php'; ?>
