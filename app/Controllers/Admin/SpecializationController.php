@@ -23,43 +23,85 @@ class SpecializationController extends Controller
     {
         AdminAuth::check();
 
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $name = trim($_POST['name'] ?? '');
-            if ($name !== '') {
-                (new SpecializationModel())->create($name);
-            }
-            header('Location: /admin/specializations');
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->view('admin/specializations/create');
+            return;
+        }
+
+        header('Content-Type: application/json');
+
+        $name = trim($_POST['name'] ?? '');
+        $description = trim($_POST['description'] ?? '');
+
+        if ($name === '') {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Specialization name is required'
+            ]);
             exit;
         }
 
-        $this->view('admin/specializations/create');
+        try {
+            (new SpecializationModel())->create($name, $description);
+
+            echo json_encode([
+                'status' => 'success',
+                'message' => 'Specialization added successfully'
+            ]);
+        } catch (\Throwable $e) {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Specialization already exists'
+            ]);
+        }
+
+        exit;
     }
+
+
 
     public function edit()
     {
         AdminAuth::check();
 
-        $id = (int)($_GET['id'] ?? 0);
-        $model = new SpecializationModel();
-        $specialization = $model->getById($id);
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $id = (int)($_GET['id'] ?? 0);
+            $model = new SpecializationModel();
+            $specialization = $model->getById($id);
 
-        if (!$specialization) {
-            die('Specialization not found');
+            if (!$specialization) {
+                die('Specialization not found');
+            }
+
+            $this->view('admin/specializations/edit', [
+                'specialization' => $specialization
+            ]);
+            return;
         }
 
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $name = trim($_POST['name'] ?? '');
-            if ($name !== '') {
-                $model->update($id, $name);
-            }
-            header('Location: /admin/specializations');
+        header('Content-Type: application/json');
+
+        $id = (int)($_POST['id'] ?? 0);
+        $name = trim($_POST['name'] ?? '');
+        $description = trim($_POST['description'] ?? '');
+
+        if ($id <= 0 || $name === '') {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Invalid data'
+            ]);
             exit;
         }
 
-        $this->view('admin/specializations/edit', [
-            'specialization' => $specialization
+        (new SpecializationModel())->update($id, $name, $description);
+
+        echo json_encode([
+            'status' => 'success',
+            'message' => 'Specialization updated successfully'
         ]);
+        exit;
     }
+
 
     public function delete()
     {

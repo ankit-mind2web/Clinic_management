@@ -5,6 +5,8 @@ use App\Controllers\AuthController;
 use App\Controllers\Admin\DashboardController;
 use App\Controllers\Admin\DoctorController;
 use App\Controllers\Admin\SpecializationController;
+use App\Controllers\Doctor\AppointmentController as DoctorAppointmentController;
+use App\Controllers\Doctor\DashboardController as DoctorDashboardController;
 use App\Controllers\HomeController;
 use App\Controllers\Patient\PatientController;
 use App\Controllers\Patient\ProfileController;
@@ -45,9 +47,13 @@ $routes = [
         '/admin/specializations/delete' => [SpecializationController::class, 'delete'],
 
         //doctor
-        '/doctor/dashboard'        => [DashboardController::class, 'index'],
+        '/doctor/dashboard'        => [\App\Controllers\Doctor\DashboardController::class, 'index'],
         '/doctor/appointments'     => [AppointmentController::class, 'index'],
-        '/doctor/appointments/view' => [AppointmentController::class, 'show'],
+        '/doctor/appointments/view' => [DoctorAppointmentController::class, 'show'],
+        '/doctor/send-verification' => [App\Controllers\Doctor\ProfileController::class, 'sendVerification'],
+        '/auth/verify-email'       => [AuthController::class, 'verifyEmail'],  //common for doctor and patient
+        '/doctor/profile'          => [DoctorController::class, 'index'],
+
 
 
 
@@ -55,7 +61,6 @@ $routes = [
         '/patient/dashboard'         => [HomeController::class, 'index'],
         '/patient/appointment'       => [PatientController::class, 'appointments'],
         '/patient/profile'           => [ProfileController::class, 'index'],
-        '/auth/verify-email'         => [AuthController::class, 'verifyEmail'],
 
 
     ],
@@ -67,6 +72,9 @@ $routes = [
         //doctor-admin
         '/admin/doctors/approve'  => [DoctorController::class, 'approve'],
         '/admin/doctors/block'    => [DoctorController::class, 'block'],
+        '/admin/specializations/create' => [SpecializationController::class, 'create'],
+        '/admin/specializations/edit'   => [SpecializationController::class, 'edit'],
+        '/admin/specializations/delete' => [SpecializationController::class, 'delete'],
 
         '/patient/profile' => [ProfileController::class, 'index'],
         '/profile/send-verification' => [ProfileController::class, 'sendVerification'],

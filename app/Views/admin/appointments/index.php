@@ -4,21 +4,37 @@ include __DIR__ . '/../layout/header.php';
 include __DIR__ . '/../layout/sidebar.php';
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>All Appointments</title>
-    <link rel="stylesheet" href="/assets/css/admin-dashboard.css">
-</head>
-<body>
-
 <div class="main">
 
+    <!-- TOP BAR -->
     <div class="topbar">
         <h2>All Appointments</h2>
+
+        <div style="display:flex; gap:10px; align-items:center;">
+
+            <!-- SEARCH -->
+            <div class="search-box">
+                <input
+                    type="text"
+                    id="searchInput"
+                    placeholder="Search appointments..."
+                    data-search-columns="1,2,3">
+                <button type="button" id="clearSearch">&times;</button>
+            </div>
+
+            <!-- FILTER -->
+            <select id="sortSelect" class="filter-select">
+                <option value="">Sort by</option>
+                <option value="name_asc">Name ↑</option>
+                <option value="name_desc">Name ↓</option>
+                <option value="date_asc">Date ↑</option>
+                <option value="date_desc">Date ↓</option>
+            </select>
+
+        </div>
     </div>
 
+    <!-- PANEL -->
     <div class="panel">
         <table class="table">
             <thead>
@@ -31,39 +47,43 @@ include __DIR__ . '/../layout/sidebar.php';
                     <th>Action</th>
                 </tr>
             </thead>
-            <tbody>
 
-            <?php if (empty($appointments)): ?>
-                <tr>
-                    <td colspan="6">No appointments found</td>
-                </tr>
-            <?php else: ?>
-                <?php foreach ($appointments as $row): ?>
+            <tbody id="tableBody">
+                <?php if (empty($appointments)): ?>
                     <tr>
-                        <td><?= htmlspecialchars($row['id']) ?></td>
-                        <td><?= htmlspecialchars($row['patient_name']) ?></td>
-                        <td><?= htmlspecialchars($row['doctor_name']) ?></td>
-                        <td><?= htmlspecialchars($row['start_utc']) ?></td>
-                        <td>
-                            <span class="status <?= strtolower($row['status']) ?>">
-                                <?= ucfirst($row['status']) ?>
-                            </span>
-                        </td>
-                        <td>
-                            <a href="/admin/appointments/show?id=<?= $row['id'] ?>">
-                                View
-                            </a>
-                        </td>
+                        <td colspan="6">No appointments found</td>
                     </tr>
-                <?php endforeach; ?>
-            <?php endif; ?>
-
+                <?php else: ?>
+                    <?php foreach ($appointments as $row): ?>
+                        <tr>
+                            <td><?= htmlspecialchars($row['id']) ?></td>
+                            <td><?= htmlspecialchars($row['patient_name']) ?></td>
+                            <td><?= htmlspecialchars($row['doctor_name']) ?></td>
+                            <td><?= htmlspecialchars($row['start_utc']) ?></td>
+                            <td>
+                                <span class="status <?= strtolower($row['status']) ?>">
+                                    <?= ucfirst($row['status']) ?>
+                                </span>
+                            </td>
+                            <td>
+                                <a href="/admin/appointments/show?id=<?= $row['id'] ?>"
+                                    class="btn info">View</a>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php endif; ?>
             </tbody>
         </table>
-    </div>
 
+        <!-- COMMON PAGINATION -->
+        <?php include __DIR__ . '/../../partials/pagination.php'; ?>
+
+    </div>
 </div>
 
+<!-- COMMON SEARCH + FILTER JS -->
+<script src="/assets/js/common_search.js"></script>
+<script src="/assets/js/common_sort.js"></script>
+<script src="/assets/js/appointment-filter.js"></script>
+
 <?php include __DIR__ . '/../layout/footer.php'; ?>
-</body>
-</html>

@@ -30,6 +30,22 @@ class User extends Model
             $data['role']
         ]);
     }
+    //find all doctors
+    public function getAllDoctors(int $limit = 10): array
+{
+    $stmt = $this->db->prepare(
+        "SELECT id, full_name, email, status
+         FROM users
+         WHERE role = 'doctor'
+         ORDER BY id DESC
+         LIMIT :limit"
+    );
+    $stmt->bindValue(':limit', $limit, \PDO::PARAM_INT);
+    $stmt->execute();
+
+    return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+}
+
 
     /* Find by email or mobile */
     public function findByEmailOrMobile(string $login): ?array

@@ -52,6 +52,7 @@
     width: 100%;
     border-collapse: collapse;
     font-size: 13px;
+    text-align: center;
 }
 
 .table th,

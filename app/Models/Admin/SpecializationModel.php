@@ -24,20 +24,20 @@ class SpecializationModel extends Model
         return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
     }
 
-    public function create(string $name): void
+    public function create(string $name, string $description = ''): void
     {
         $stmt = $this->db->prepare(
-            "INSERT INTO specializations (name) VALUES (?)"
+            "INSERT INTO specializations (name, description) VALUES (?, ?)"
         );
-        $stmt->execute([$name]);
+        $stmt->execute([$name, $description]);
     }
 
-    public function update(int $id, string $name): void
+    public function update(int $id, string $name, string $description = ''): void
     {
         $stmt = $this->db->prepare(
-            "UPDATE specializations SET name = ? WHERE id = ?"
+            "UPDATE specializations SET name = ?, description = ? WHERE id = ?"
         );
-        $stmt->execute([$name, $id]);
+        $stmt->execute([$name, $description, $id]);
     }
 
     public function delete(int $id): void

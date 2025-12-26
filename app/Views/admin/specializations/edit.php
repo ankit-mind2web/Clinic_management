@@ -3,20 +3,41 @@ $title = 'Edit Specialization';
 include __DIR__ . '/../layout/header.php';
 include __DIR__ . '/../layout/sidebar.php';
 ?>
+<link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/specialization.css">
 
 <div class="main">
-    <div class="topbar"><h2>Edit Specialization</h2></div>
+    <div class="topbar">
+        <h2>Edit Specialization</h2>
+    </div>
 
     <div class="panel">
-        <form method="POST">
-            <label>Name</label><br>
-            <input type="text" name="name"
-                   value="<?= htmlspecialchars($specialization['name']) ?>" required>
-            <br><br>
-            <button class="btn success">Update</button>
-            <a href="/admin/specializations" class="btn">Cancel</a>
+        <form id="editSpecializationForm">
+
+            <input type="hidden" name="id" id="id"
+                value="<?= (int)$specialization['id'] ?>">
+
+            <label>Specialization Name</label>
+            <input type="text"
+                name="name"
+                id="name"
+                value="<?= htmlspecialchars($specialization['name']) ?>"
+                required>
+
+            <label>Description</label>
+            <textarea name="description"
+                id="description"
+                rows="4"><?= htmlspecialchars($specialization['description'] ?? '') ?></textarea>
+
+            <div style="margin-top: 10px;">
+                <button type="submit" class="btn success">Update</button>
+                <a href="/admin/specializations" class="btn">Cancel</a>
+            </div>
+
+            <div id="formMessage"></div>
         </form>
     </div>
 </div>
+
+<script src="<?= BASE_URL ?>/assets/js/specialization.js"></script>
 
 <?php include __DIR__ . '/../layout/footer.php'; ?>

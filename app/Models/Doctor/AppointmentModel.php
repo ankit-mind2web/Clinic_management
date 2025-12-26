@@ -7,7 +7,7 @@ use PDO;
 
 class AppointmentModel extends Model
 {
-    public function countByDoctor(int $doctorId): int
+    public function appointmentCount(int $doctorId): int
     {
         $stmt = $this->db->prepare(
             "SELECT COUNT(*) FROM appointments WHERE doctor_id = ?"
@@ -16,16 +16,18 @@ class AppointmentModel extends Model
         return (int)$stmt->fetchColumn();
     }
 
-    public function countToday(int $doctorId): int
+    public function countTodayAppointment(int $doctorId): int
     {
         $stmt = $this->db->prepare(
-            "SELECT COUNT(*) FROM appointments
-             WHERE doctor_id = ?
-             AND DATE(start_utc) = CURDATE()"
+            "SELECT COUNT(*)
+         FROM appointments
+         WHERE doctor_id = ?
+           AND DATE(start_utc) = CURDATE()"
         );
         $stmt->execute([$doctorId]);
         return (int)$stmt->fetchColumn();
     }
+
 
     public function getRecent(int $doctorId, int $limit): array
     {

@@ -2,25 +2,43 @@
 
 namespace App\Controllers\Doctor;
 
-use App\Controllers\Admin\AppointmentController;
 use App\Core\Controller;
-use App\Helpers\Doctor\DoctorAuth;
-use App\Models\Admin\AppointmentModel;
+use App\Models\Doctor\AppointmentModel;
 
 class DashboardController extends Controller
 {
     public function index()
     {
-        DoctorAuth::check();
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        // must be logged in
+        if (!isset($_SESSION['user'])) {
+            header('Location: /auth/login');
+            exit;
+        }
+
+        // doctor-only access
+        if (strtolower($_SESSION['user']['role']) !== 'doctor') {
+            header('Location: /');
+            exit;
+        }
+
+        // email must be verified
+        // if (empty($_SESSION['user']['email_verified'])) {
+        //     $this->view('doctor/verify_email');
+        //     return;
+        // }
+
 
         $doctorId = $_SESSION['user']['id'];
-
         $appointmentModel = new AppointmentModel();
 
         $this->view('doctor/dashboard', [
-            'totalAppointments' => $appointmentModel->countByDoctor($doctorId),
-            'todayAppointments' => $appointmentModel->countToday($doctorId),
-            'recentAppointments'=> $appointmentModel->getRecent($doctorId, 5)
+            'doctorName'        => $_SESSION['user']['full_name'],
+            'totalAppointments' => $appointmentModel->appointmentCount($doctorId),
+            'todayAppointments' => $appointmentModel->countTodayAppointment($doctorId),
         ]);
     }
 }

@@ -40,7 +40,7 @@ $isDoctorMenuOpen =
                 <li>
                     <a href="/admin/doctors/pending"
                         class="<?= str_contains($current, '/admin/doctors/pending') ? 'active' : '' ?>">
-                        Pending Requests
+                        Requests
                     </a>
                 </li>
             </ul>

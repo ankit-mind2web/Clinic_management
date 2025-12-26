@@ -143,7 +143,7 @@ class AuthController extends Controller
             'full_name'      => $user['full_name'],
             'email'          => $user['email'],
             'mobile'         => $user['mobile'],
-            'role'           => $user['role'],
+            'role'           => strtolower($user['role']),
             'email_verified' => (int)$user['email_verified']
         ];
 
@@ -169,28 +169,50 @@ class AuthController extends Controller
         $token = trim($_GET['token'] ?? '');
 
         if ($token === '') {
-            header('Location: /');
-            exit;
+            die('Invalid verification link');
         }
 
-        $profileModel = new \App\Models\Profile();
-        $user = $profileModel->verifyEmailByToken($token);
+        $db = \App\Core\Database::getConnection();
+
+        $stmt = $db->prepare("
+        SELECT id, role
+        FROM users
+        WHERE email_verify_token = ?
+          AND email_verify_expires > NOW()
+        LIMIT 1
+    ");
+        $stmt->execute([$token]);
+        $user = $stmt->fetch(\PDO::FETCH_ASSOC);
 
         if (!$user) {
-            header('Location: /');
-            exit;
+            die('Verification link expired or invalid');
         }
 
-        // update session if user is logged in
-        if (isset($_SESSION['user']) && $_SESSION['user']['id'] === $user['id']) {
+        // mark email verified
+        $update = $db->prepare("
+        UPDATE users
+        SET email_verified = 1,
+            email_verify_token = NULL,
+            email_verify_expires = NULL
+        WHERE id = ?
+    ");
+        $update->execute([$user['id']]);
+
+        // update session if same user logged in
+        if (isset($_SESSION['user']) && $_SESSION['user']['id'] == $user['id']) {
             $_SESSION['user']['email_verified'] = 1;
         }
 
-        header('Location: /patient/profile');
+        // redirect by role
+        $redirect = match (strtolower($user['role'])) {
+            'doctor'  => '/doctor/dashboard',
+            'patient' => '/patient/profile',
+            default   => '/'
+        };
+
+        header("Location: {$redirect}");
         exit;
     }
-
-
 
 
     //  LOGOUT 

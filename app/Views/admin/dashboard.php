@@ -38,51 +38,70 @@ include __DIR__ . '/../admin/layout/sidebar.php';
 
         <div class="panel">
             <h3>Recent Appointments</h3>
-            <table class="table">
-                <tr>
-                    <th>Patient</th>
-                    <th>Doctor</th>
-                    <th>Status</th>
-                </tr>
 
-                <?php if (!empty($recentAppointments)): ?>
-                    <?php foreach ($recentAppointments as $row): ?>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Patient</th>
+                        <th>Doctor</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php if (!empty($recentAppointments)): ?>
+                        <?php foreach ($recentAppointments as $row): ?>
+                            <tr>
+                                <td><?= htmlspecialchars($row['patient_name']) ?></td>
+                                <td><?= htmlspecialchars($row['doctor_name']) ?></td>
+                                <td>
+                                    <span class="status <?= htmlspecialchars(strtolower($row['status'])) ?>">
+                                        <?= ucfirst($row['status']) ?>
+                                    </span>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php else: ?>
                         <tr>
-                            <td><?= htmlspecialchars($row['patient_name']) ?></td>
-                            <td><?= htmlspecialchars($row['doctor_name']) ?></td>
-                            <td>
-                                <span class="status <?= strtolower($row['status']) ?>">
-                                    <?= ucfirst($row['status']) ?>
-                                </span>
-                            </td>
+                            <td colspan="3">No recent appointments</td>
                         </tr>
-                    <?php endforeach; ?>
-                <?php else: ?>
-                    <tr><td colspan="3">No recent appointments</td></tr>
-                <?php endif; ?>
+                    <?php endif; ?>
+                </tbody>
             </table>
         </div>
 
         <div class="panel">
-            <h3>Pending Doctors</h3>
-            <table class="table">
-                <tr>
-                    <th>Name</th>
-                    <th>Status</th>
-                </tr>
+            <h3>All Doctors</h3>
 
-                <?php if (!empty($pendingDoctorList)): ?>
-                    <?php foreach ($pendingDoctorList as $doc): ?>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <?php if (!empty($doctors)): ?>
+                        <?php foreach ($doctors as $doc): ?>
+                            <tr>
+                                <td><?= htmlspecialchars($doc['full_name']) ?></td>
+                                <td>
+                                    <span class="status <?= htmlspecialchars(strtolower($doc['status'])) ?>">
+                                        <?= ucfirst($doc['status']) ?>
+                                    </span>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php else: ?>
                         <tr>
-                            <td><?= htmlspecialchars($doc['full_name']) ?></td>
-                            <td><span class="status pending">Pending</span></td>
+                            <td colspan="3">No doctors found</td>
                         </tr>
-                    <?php endforeach; ?>
-                <?php else: ?>
-                    <tr><td colspan="2">No pending doctors</td></tr>
-                <?php endif; ?>
+                    <?php endif; ?>
+                </tbody>
             </table>
         </div>
+
+
 
     </div>
 
