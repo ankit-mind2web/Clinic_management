@@ -36,15 +36,6 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-
-/*
- | SESSION STRUCTURE (CONFIRMED)
- | $_SESSION['user'] = [
- |   'id',
- |   'full_name',
- |   'role'
- | ]
- */
 $user = $_SESSION['user'] ?? null;
 $username = $user['full_name'] ?? ($user['name'] ?? '');
 $initial = $username ? strtoupper($username[0]) : '';

@@ -10,7 +10,7 @@
 /* Page title */
 .doctor-dashboard h2 {
     margin-bottom: 30px;
-    color: #003b95;
+    color: #00a0a4;
     font-size: 22px;
     font-weight: 600;
 }
@@ -22,8 +22,6 @@
     display: flex;
     gap: 24px;
     margin-bottom: 30px;
-
-    /* 🔒 LOCK WIDTH */
     width: 504px;
 }
 
