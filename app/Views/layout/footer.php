@@ -16,14 +16,14 @@
         <div class="footer-col">
             <h4>Contact Us</h4>
             <p>📞 +91 98765 43210</p>
-            <p>✉️ contact@wellcareclinic.com</p>
+            <a class="email-link" href="mailto:support@indianbank.com">✉️ support@wellcareclinic.com</a><br>
             <p>⏰ Mon – Sat: 9:00 AM – 7:00 PM</p>
         </div>
 
         <!-- QUICK LINKS -->
         <div class="footer-col">
             <h4>Quick Links</h4>
-            <p><a href="/doctors">Our Doctors</a></p>
+            <p><a href="#">Our Doctors</a></p>
             <p><a href="/services">Services</a></p>
             <p><a href="/appointments">appointments</a></p>
 

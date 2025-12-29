@@ -8,41 +8,34 @@ use App\Models\User;
 
 class DoctorController extends Controller
 {
-    /* 
-       LIST ALL DOCTORS
-     */
+    private User $userModel;
+
+    public function __construct()
+    {
+        $this->userModel = new User();
+    }
+
+    /* LIST ALL DOCTORS */
     public function index()
     {
         AdminAuth::check();
 
-        $userModel = new User();
-
-        $data = [
-            'doctors' => $userModel->getDoctors()
-        ];
-
-        $this->view('admin/doctors/index', $data);
+        $this->view('admin/doctors/index', [
+            'doctors' => $this->userModel->getDoctors()
+        ]);
     }
 
-    /* 
-       PENDING DOCTORS
-     */
+    /* PENDING DOCTORS */
     public function pending()
     {
         AdminAuth::check();
 
-        $userModel = new User();
-
-        $data = [
-            'doctors' => $userModel->getPendingDoctors()
-        ];
-
-        $this->view('admin/doctors/pending', $data);
+        $this->view('admin/doctors/pending', [
+            'doctors' => $this->userModel->getPendingDoctors()
+        ]);
     }
 
-    /* 
-       VIEW SINGLE DOCTOR
-     */
+    /* VIEW SINGLE DOCTOR */
     public function show()
     {
         AdminAuth::check();
@@ -52,10 +45,7 @@ class DoctorController extends Controller
             die('Invalid doctor');
         }
 
-        $userModel = new User();
-
-        // fetch all doctors and find the one we want (simple + safe)
-        $doctors = $userModel->getDoctors();
+        $doctors = $this->userModel->getDoctors();
         $doctor  = null;
 
         foreach ($doctors as $d) {
@@ -74,9 +64,7 @@ class DoctorController extends Controller
         ]);
     }
 
-    /* 
-       APPROVE DOCTOR
-     */
+    /* APPROVE DOCTOR */
     public function approve()
     {
         AdminAuth::check();
@@ -84,7 +72,7 @@ class DoctorController extends Controller
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $id = (int)($_POST['id'] ?? 0);
             if ($id > 0) {
-                (new User())->updateStatus($id, 'active');
+                $this->userModel->updateStatus($id, 'active');
             }
         }
 
@@ -92,9 +80,7 @@ class DoctorController extends Controller
         exit;
     }
 
-    /* 
-       BLOCK DOCTOR
-     */
+    /* BLOCK DOCTOR */
     public function block()
     {
         AdminAuth::check();
@@ -102,7 +88,23 @@ class DoctorController extends Controller
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $id = (int)($_POST['id'] ?? 0);
             if ($id > 0) {
-                (new User())->updateStatus($id, 'blocked');
+                $this->userModel->updateStatus($id, 'blocked');
+            }
+        }
+
+        header('Location: /admin/doctors');
+        exit;
+    }
+
+    /* UNBLOCK DOCTOR */
+    public function unblock()
+    {
+        AdminAuth::check();
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $id = (int)($_POST['id'] ?? 0);
+            if ($id > 0) {
+                $this->userModel->updateStatus($id, 'active');
             }
         }
 

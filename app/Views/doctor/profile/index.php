@@ -1,41 +1,40 @@
+<!-- app/Views/doctor/profile/index.php -->
 <!DOCTYPE html>
 <html>
 
 <head>
-    <title>My Profile</title>
-    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/patient_profile.css">
+    <title>Doctor Profile</title>
+    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/doctor_profile.css">
     <?php require_once __DIR__ . '/../../layout/header.php'; ?>
-    
 </head>
 
 <body>
 
-
     <?php
-    $user = $_SESSION['user'];
+    $user = $_SESSION['user'] ?? [];
 
     $isVerified = ($user['email_verified'] ?? 0) == 1;
 
-    // profile values
+    /* PROFILE DATA (SAFE) */
     $gender  = $profile['gender'] ?? '';
     $dob     = $profile['dob'] ?? '';
     $address = $profile['address'] ?? '';
 
-    // calculate age
+    /* AGE CALCULATION */
     $age = '—';
-    if ($dob) {
+    if (!empty($dob)) {
         $birthDate = new DateTime($dob);
         $today = new DateTime();
-        $age = $today->diff($birthDate)->y;
+        $age = $today->diff($birthDate)->y . ' years';
     }
 
-    // profile completeness
-    $isProfileComplete = ($dob !== '' && $address !== '');
+    /* PROFILE COMPLETENESS */
+    $isProfileComplete = ($gender !== '' && $dob !== '' && $address !== '');
 
-    // edit mode
+    /* EDIT MODE */
     $isEditMode = isset($_GET['edit']);
 
-    // resend cooldown
+    /* EMAIL COOLDOWN */
     $cooldownUntil = $_SESSION['verify_cooldown_until'] ?? 0;
     $now = time();
     $inCooldown = $cooldownUntil > $now;
@@ -48,35 +47,34 @@
             <div class="profile-header">
                 <h2>My Profile</h2>
 
-                <a href="/patient/profile?edit=1" class="edit-profile-icon" title="Edit Profile">
+                <a href="/doctor/profile?edit=1" class="edit-profile-icon" title="Edit Profile">
                     <img src="/assets/images/edit.png" alt="Edit">
                 </a>
             </div>
 
-
-            <?php if (!empty($message)): ?>
+            <?php if (!empty($message ?? '')): ?>
                 <div class="auth-error"><?= htmlspecialchars($message) ?></div>
             <?php endif; ?>
 
-            <!--  VIEW MODE  -->
+            <!-- VIEW MODE -->
             <?php if (!$isEditMode): ?>
 
                 <table class="profile-table">
                     <tr>
                         <th>Name</th>
-                        <td><?= htmlspecialchars($user['full_name']) ?></td>
+                        <td><?= htmlspecialchars($user['full_name'] ?? '—') ?></td>
                     </tr>
                     <tr>
                         <th>Email</th>
-                        <td><?= htmlspecialchars($user['email']) ?></td>
+                        <td><?= htmlspecialchars($user['email'] ?? '—') ?></td>
                     </tr>
                     <tr>
                         <th>Mobile</th>
-                        <td><?= htmlspecialchars($user['mobile']) ?></td>
+                        <td><?= htmlspecialchars($user['mobile'] ?? '—') ?></td>
                     </tr>
                     <tr>
-                        <th>Date of Birth</th>
-                        <td><?= $dob ?: '—' ?></td>
+                        <th>Gender</th>
+                        <td><?= $gender ?: '—' ?></td>
                     </tr>
                     <tr>
                         <th>Age</th>
@@ -88,7 +86,7 @@
                     </tr>
                 </table>
 
-                <!-- EMAIL VERIFICATION STATUS -->
+                <!-- EMAIL VERIFICATION -->
                 <?php if ($isVerified): ?>
 
                     <div class="auth-success verified">
@@ -96,13 +94,12 @@
                         <span class="tick">✔</span>
                     </div>
 
-
                 <?php else: ?>
 
                     <?php if ($isProfileComplete): ?>
                         <div class="auth-error">
                             Email not verified
-                            <form method="post" action="/profile/send-verification" style="margin-top:10px;">
+                            <form method="post" action="/doctor/profile/send-verification" style="margin-top:10px;">
                                 <button type="submit" <?= $inCooldown ? 'disabled' : '' ?>>
                                     <?= $inCooldown ? "Resend in {$secondsLeft}s" : "Verify Email" ?>
                                 </button>
@@ -116,10 +113,10 @@
 
                 <?php endif; ?>
 
-                <!--  EDIT MODE  -->
+                <!-- EDIT MODE -->
             <?php else: ?>
 
-                <form id="profileForm">
+                <form method="post" action="/doctor/profile">
 
                     <label>Gender</label>
                     <select name="gender" required>
@@ -135,22 +132,16 @@
                     <label>Address</label>
                     <textarea name="address" rows="4" required><?= htmlspecialchars($address) ?></textarea>
 
-                    <!-- IMPORTANT -->
-                    <input type="hidden" name="action" value="save_profile">
-
                     <button type="submit">Save Profile</button>
-                    <a href="/patient/profile" class="btn-cancel">Cancel</a>
+                    <a href="/doctor/profile" class="btn-cancel">Cancel</a>
                 </form>
 
-                <div id="profileMsg"></div>
             <?php endif; ?>
 
         </div>
     </div>
 
-    <script src="/assets/js/profile.js"></script>
     <?php require_once __DIR__ . '/../../layout/footer.php'; ?>
-
 </body>
 
 </html>

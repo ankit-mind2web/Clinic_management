@@ -3,7 +3,9 @@
 namespace App\Controllers;
 
 use App\Core\Controller;
+use App\Core\Database;
 use App\Services\AuthService;
+use PDO;
 
 class AuthController extends Controller
 {
@@ -166,51 +168,50 @@ class AuthController extends Controller
             session_start();
         }
 
-        $token = trim($_GET['token'] ?? '');
-
+        $token = $_GET['token'] ?? '';
         if ($token === '') {
-            die('Invalid verification link');
+            die('Invalid verification token');
         }
 
-        $db = \App\Core\Database::getConnection();
+        $db = Database::getConnection();
 
-        $stmt = $db->prepare("
-        SELECT id, role
-        FROM users
-        WHERE email_verify_token = ?
-          AND email_verify_expires > NOW()
-        LIMIT 1
-    ");
+        $stmt = $db->prepare(
+            "SELECT id, role, email_token_expires 
+            FROM users 
+            WHERE email_verify_token = ?"
+        );
         $stmt->execute([$token]);
-        $user = $stmt->fetch(\PDO::FETCH_ASSOC);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if (!$user) {
-            die('Verification link expired or invalid');
+            die('Invalid token');
         }
 
-        // mark email verified
-        $update = $db->prepare("
-        UPDATE users
-        SET email_verified = 1,
-            email_verify_token = NULL,
-            email_verify_expires = NULL
-        WHERE id = ?
-    ");
-        $update->execute([$user['id']]);
+        if (strtotime($user['email_token_expires']) < time()) {
+            die('Verification link expired');
+        }
 
-        // update session if same user logged in
+        $stmt = $db->prepare(
+            "UPDATE users 
+            SET email_verified = 1,
+            email_verify_token = NULL,
+            email_token_expires = NULL
+            WHERE id = ?"
+        );
+        $stmt->execute([$user['id']]);
+
+        // update session
         if (isset($_SESSION['user']) && $_SESSION['user']['id'] == $user['id']) {
             $_SESSION['user']['email_verified'] = 1;
         }
 
         // redirect by role
-        $redirect = match (strtolower($user['role'])) {
-            'doctor'  => '/doctor/dashboard',
-            'patient' => '/patient/profile',
-            default   => '/'
-        };
+        if ($user['role'] === 'doctor') {
+            header('Location: /doctor/specialization');
+        } else {
+            header('Location: /patient/profile');
+        }
 
-        header("Location: {$redirect}");
         exit;
     }
 

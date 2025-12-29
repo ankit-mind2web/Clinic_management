@@ -14,10 +14,28 @@ class SpecializationController extends Controller
 
         $model = new SpecializationModel();
 
-        $this->view('admin/specializations/index', [
-            'specializations' => $model->getAll()
-        ]);
+        $perPage = 5;
+        $page = max(1, (int)($_GET['page'] ?? 1));
+        $offset = ($page - 1) * $perPage;
+
+        $specializations = $model->getPaginated($perPage, $offset);
+        $total = $model->countAll();
+
+        $pagination = [
+            'current_page' => $page,
+            'total_pages'  => ceil($total / $perPage),
+            'base_url'     => '/admin/specializations'
+        ];
+
+        if (!empty($_SERVER['HTTP_X_REQUESTED_WITH'])) {
+            require __DIR__ . '/../../Views/admin/specializations/table.php';
+            exit;
+        }
+
+        // Normal page load
+        $this->view('admin/specializations/index', compact('specializations', 'pagination'));
     }
+
 
     public function create()
     {
@@ -54,17 +72,15 @@ class SpecializationController extends Controller
                 'message' => 'Specialization already exists'
             ]);
         }
-
         exit;
     }
-
-
 
     public function edit()
     {
         AdminAuth::check();
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+
             $id = (int)($_GET['id'] ?? 0);
             $model = new SpecializationModel();
             $specialization = $model->getById($id);
@@ -101,7 +117,6 @@ class SpecializationController extends Controller
         ]);
         exit;
     }
-
 
     public function delete()
     {

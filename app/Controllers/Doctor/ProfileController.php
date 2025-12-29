@@ -3,57 +3,67 @@
 namespace App\Controllers\Doctor;
 
 use App\Core\Controller;
-use App\Models\Doctor\DoctorProfile;
+use App\Models\Doctor\DoctorSpecialization;
+use App\Models\Profile;
 
 class ProfileController extends Controller
 {
     public function index()
     {
-        session_start();
-
         if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'doctor') {
             header('Location: /auth/login');
             exit;
         }
 
         $userId = $_SESSION['user']['id'];
-        $model  = new DoctorProfile();
-        $message = '';
 
+        $profileModel = new Profile();
+        $specModel    = new DoctorSpecialization();
+
+        /* ===== FLASH MESSAGE (READ & CLEAR) ===== */
+        $message = $_SESSION['flash_message'] ?? '';
+        unset($_SESSION['flash_message']);
+
+        /* ===== HANDLE POST (PERSONAL PROFILE ONLY) ===== */
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $bio = trim($_POST['bio'] ?? '');
-            $experience = (int)($_POST['experience'] ?? 0);
 
-            if ($bio === '' || $experience <= 0) {
-                $message = 'All fields required';
-            } else {
-                $model->save($userId, $bio, $experience);
-                $message = 'Profile saved successfully';
+            $gender  = trim($_POST['gender'] ?? '');
+            $dob     = trim($_POST['dob'] ?? '');
+            $address = trim($_POST['address'] ?? '');
+
+            if ($gender === '' || $dob === '' || $address === '') {
+                $_SESSION['flash_message'] = 'All fields are required';
+                header('Location: /doctor/profile?edit=1');
+                exit;
             }
+
+            $profileModel->saveOrUpdate($userId, $gender, $dob, $address);
+
+            $_SESSION['flash_message'] = 'Profile updated successfully';
+            header('Location: /doctor/profile');
+            exit;
         }
 
-        $profile = $model->get($userId);
-
-        $this->view('doctor/profile', [
-            'profile' => $profile,
-            'message' => $message
+        $this->view('doctor/profile/index', [
+            'profile'    => $profileModel->getByUserId($userId),
+            'doctorSpec' => $specModel->getByDoctorAll($userId),
+            'message'    => $message
         ]);
     }
 
     public function sendVerification()
     {
-        session_start();
-
         if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'doctor') {
             header('Location: /auth/login');
             exit;
         }
 
-        $userId = $_SESSION['user']['id'];
-        $model  = new DoctorProfile();
+        $doctorId = $_SESSION['user']['id'];
+        $model    = new DoctorSpecialization();
 
-        $profile = $model->get($userId);
-        if (!$profile || empty($profile['bio']) || empty($profile['experience'])) {
+        /* MUST HAVE SPECIALIZATION BEFORE VERIFY */
+        if (!$model->getByDoctorAll($doctorId)) {
+            $_SESSION['flash_message'] = 'Add specialization before email verification';
             header('Location: /doctor/profile');
             exit;
         }
@@ -61,9 +71,14 @@ class ProfileController extends Controller
         $token  = bin2hex(random_bytes(32));
         $expiry = date('Y-m-d H:i:s', strtotime('+24 hours'));
 
-        $model->saveToken($userId, $token, $expiry);
+        $model->saveToken($doctorId, $token, $expiry);
 
-        $link = "http://{$_SERVER['HTTP_HOST']}/auth/verify-email?token={$token}";
+        $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+            ? 'https'
+            : 'http';
+
+        $link = $scheme . '://' . $_SERVER['HTTP_HOST']
+            . '/auth/verify-email?token=' . $token;
 
         file_put_contents(
             __DIR__ . '/../../../storage/email_log.txt',
@@ -71,6 +86,7 @@ class ProfileController extends Controller
             FILE_APPEND
         );
 
+        $_SESSION['flash_message'] = 'Verification email sent';
         header('Location: /doctor/profile');
         exit;
     }

@@ -1,8 +1,12 @@
 <?php
 $title = 'Doctor Dashboard';
 include __DIR__ . '/../layout/header.php';
+
+$user = $_SESSION['user'] ?? [];
+$isVerified = ($user['email_verified'] ?? 0) == 1;
 ?>
 <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/doctor_dashboard.css">
+
 <div class="doctor-dashboard">
 
     <h2>Welcome, Dr. <?= htmlspecialchars($doctorName) ?></h2>
@@ -23,6 +27,15 @@ include __DIR__ . '/../layout/header.php';
 
     <div class="dashboard-actions">
         <a href="/doctor/profile" class="action-btn">My Profile</a>
+
+        <?php if ($isVerified): ?>
+            <a href="/doctor/specialization" class="action-btn">Manage Specialization</a>
+        <?php else: ?>
+            <span class="action-btn disabled" title="Verify email first">
+                Manage Specialization
+            </span>
+        <?php endif; ?>
+
         <a href="/doctor/availability" class="action-btn">Set Availability</a>
         <a href="/doctor/appointments" class="action-btn">View Appointments</a>
     </div>

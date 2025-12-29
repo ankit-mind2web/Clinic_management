@@ -75,6 +75,15 @@
 
 .status.active { background: #00c292; }
 .status.pending { background: #fb9678; }
+.status.blocked {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.btn.success {
+    background: #22c55e;
+    color: #fff;
+}
 
 /* RESPONSIVE */
 @media (max-width: 1200px) {

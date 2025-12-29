@@ -5,6 +5,7 @@ include __DIR__ . '/../layout/header.php';
 include __DIR__ . '/../layout/sidebar.php';
 ?>
 <link rel="stylesheet" href="/../assets/css/admin-doctors.css">
+
 <div class="main">
 
     <div class="topbar">
@@ -53,23 +54,16 @@ include __DIR__ . '/../layout/sidebar.php';
                 <?php if (!empty($doctors)): ?>
                     <?php foreach ($doctors as $doc): ?>
                         <tr data-date="<?= htmlspecialchars($doc['created_at'] ?? '') ?>">
-                            <!-- 0 -->
                             <td><?= htmlspecialchars($doc['full_name']) ?></td>
-
-                            <!-- 1 -->
                             <td><?= htmlspecialchars($doc['email']) ?></td>
-
-                            <!-- 2 -->
                             <td><?= DateHelper::calculateAge($doc['dob'] ?? null) ?></td>
 
-                            <!-- 3 -->
                             <td class="center">
-                                <span class="status-badge <?= $doc['status'] ?>">
+                                <span class="status-badge <?= htmlspecialchars($doc['status']) ?>">
                                     <?= ucfirst($doc['status']) ?>
                                 </span>
                             </td>
 
-                            <!-- 4 -->
                             <td class="center">
                                 <a href="/admin/doctors/view?id=<?= $doc['id'] ?>"
                                    class="btn info">View</a>
@@ -80,6 +74,14 @@ include __DIR__ . '/../layout/sidebar.php';
                                           style="display:inline;">
                                         <input type="hidden" name="id" value="<?= $doc['id'] ?>">
                                         <button class="btn danger">Block</button>
+                                    </form>
+
+                                <?php elseif ($doc['status'] === 'blocked'): ?>
+                                    <form method="POST"
+                                          action="/admin/doctors/unblock"
+                                          style="display:inline;">
+                                        <input type="hidden" name="id" value="<?= $doc['id'] ?>">
+                                        <button class="btn success">Unblock</button>
                                     </form>
                                 <?php endif; ?>
                             </td>
@@ -94,13 +96,8 @@ include __DIR__ . '/../layout/sidebar.php';
             </table>
         </div>
 
-        <!-- COMMON PAGINATION -->
         <?php include __DIR__ . '/../../partials/pagination.php'; ?>
-
     </div>
 </div>
-
-<!-- COMMON SEARCH + SORT JS -->
-<script src="/assets/js/common_search.js"></script>
 <script src="/assets/js/common_sort.js"></script>
 <?php include __DIR__ . '/../layout/footer.php'; ?>
