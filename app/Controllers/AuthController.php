@@ -146,6 +146,7 @@ class AuthController extends Controller
             'email'          => $user['email'],
             'mobile'         => $user['mobile'],
             'role'           => strtolower($user['role']),
+            'status'         => $user['status'],
             'email_verified' => (int)$user['email_verified']
         ];
 

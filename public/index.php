@@ -1,8 +1,10 @@
 <?php
+
 use App\Controllers\Admin\AppointmentController;
 use App\Controllers\AuthController;
 use App\Controllers\Admin\DashboardController;
 use App\Controllers\Admin\DoctorController;
+use App\Controllers\Admin\PatientController as AdminPatientController;
 use App\Controllers\Admin\SpecializationController;
 use App\Controllers\Doctor\AppointmentController as DoctorAppointmentController;
 use App\Controllers\Doctor\DashboardController as DoctorDashboardController;
@@ -10,6 +12,7 @@ use App\Controllers\Doctor\ProfileController as DoctorProfileController;
 use App\Controllers\Doctor\SpecializationController as DoctorSpecializationController;
 use App\Controllers\HomeController;
 use App\Controllers\PageController;
+use App\Controllers\Patient\AppointmentController as PatientAppointmentController;
 use App\Controllers\Patient\PatientController;
 use App\Controllers\Patient\ProfileController;
 
@@ -38,8 +41,9 @@ $routes = [
         '/admin/doctors/view' => [DoctorController::class, 'show'],
         '/admin/doctors/block'   => [DoctorController::class, 'block'],
         '/admin/doctors/unblock' => [DoctorController::class, 'unblock'],
-
-
+        '/admin/doctors/approve' => [DoctorController::class, 'approve'],
+        '/admin/doctors/reject' => [DoctorController::class, 'reject'],
+        '/admin/patients'       => [AdminPatientController::class, 'index'],
 
         //appointment
         '/admin/appointments'      => [AppointmentController::class, 'index'],
@@ -59,8 +63,8 @@ $routes = [
         '/doctor/profile'           => [DoctorProfileController::class, 'index'],
         '/doctor/specialization'   => [DoctorSpecializationController::class, 'index'],
         '/auth/verify-email' => [AuthController::class, 'verifyEmail'],
-
-
+        // Doctor Availability Routes
+        '/doctor/availability'        => [App\Controllers\Doctor\DoctorAvailabilityController::class, 'index'],
 
 
         //patient dashboard
@@ -68,6 +72,7 @@ $routes = [
         '/patient/appointment'       => [PatientController::class, 'appointments'],
         '/patient/profile'           => [ProfileController::class, 'index'],
         '/profile/send-verification' => [ProfileController::class, 'sendVerification'],
+        '/patient/appointments' => [PatientAppointmentController::class,'index'],
 
         //pages
         '/services' => [PageController::class, 'services'],
@@ -90,11 +95,20 @@ $routes = [
 
         '/patient/profile' => [ProfileController::class, 'index'],
         '/profile/send-verification' => [ProfileController::class, 'sendVerification'],
+        '/patient/appointments/availability' => [PatientAppointmentController::class,'availability'],
+        '/patient/appointments/book' => [PatientAppointmentController::class,'book'],
+
+
         '/doctor/profile/send-verification' => [App\Controllers\Doctor\ProfileController::class, 'sendVerification'],
         '/doctor/profile'                   => [DoctorProfileController::class, 'index'],
         '/doctor/specialization'   => [DoctorSpecializationController::class, 'index'],
 
         '/admin/doctors/unblock' => [DoctorController::class, 'unblock'],
+        '/admin/doctors/reject'  => [DoctorController::class, 'reject'],
+
+        '/doctor/availability/store'  => [App\Controllers\Doctor\DoctorAvailabilityController::class, 'store'],
+
+
 
     ]
 

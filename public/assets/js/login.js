@@ -60,5 +60,5 @@ document.addEventListener('DOMContentLoaded', function () {
     function showError(msg) {
         errorBox.style.display = 'block';
         errorBox.innerText = msg;
-    }
+    }   
 });

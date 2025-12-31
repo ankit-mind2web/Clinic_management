@@ -41,7 +41,7 @@ class Profile
         } else {
             // insert
             $sql = "INSERT INTO profile (id, gender, dob, address, status)
-                    VALUES (:id, :gender, :dob, :address, 'Pending')";
+                    VALUES (:id, :gender, :dob, :address, 'Verified')";
         }
 
         $stmt = $this->db->prepare($sql);

@@ -1,6 +1,6 @@
 <?php
 $title = 'Manage Specialization';
-require_once __DIR__ . '/../../layout/header.php';
+require_once __DIR__ . '/../layout/header.php';
 ?>
 
 <link rel="stylesheet" href="/assets/css/doctor_specialization.css">
@@ -58,4 +58,4 @@ require_once __DIR__ . '/../../layout/header.php';
     </div>
 </div>
 
-<?php require_once __DIR__ . '/../../layout/footer.php'; ?>
+<?php require_once __DIR__ . '/../layout/footer.php'; ?>

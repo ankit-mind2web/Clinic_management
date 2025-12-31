@@ -53,7 +53,7 @@ class SpecializationController extends Controller
             exit;
         }
 
-        $this->view('doctor/specialization/index', [
+        $this->view('doctor/specialization', [
             'specializations' => $model->getAllSpecializations(),
             'doctorSpecs'     => $model->getByDoctorAll($doctorId),
             'message'         => $message

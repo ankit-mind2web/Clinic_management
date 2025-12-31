@@ -113,8 +113,11 @@ class SpecializationModel extends Model
     // Count all specializations
     public function countAll(): int
     {
-        return (int) $this->db->query(
-            "SELECT COUNT(*) FROM specializations"
-        )->fetchColumn();
+        $sql = "SELECT COUNT(*) FROM specializations";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+
+        return (int) $stmt->fetchColumn();
     }
 }

@@ -27,10 +27,23 @@ include __DIR__ . '/../layout/sidebar.php';
                         <td><?= htmlspecialchars($d['full_name']) ?></td>
                         <td><?= htmlspecialchars($d['email']) ?></td>
                         <td class="center">
-                            <form method="POST" action="/admin/doctors/approve">
-                                <input type="hidden" name="id" value="<?= $d['id'] ?>">
-                                <button class="btn success">Approve</button>
-                            </form>
+                            <div class="action-group">
+
+                                <!-- APPROVE -->
+                                <form method="POST" action="/admin/doctors/approve" class="inline-form">
+                                    <input type="hidden" name="id" value="<?= $d['id'] ?>">
+                                    <button class="btn success">Approve</button>
+                                </form>
+
+                                <!-- REJECT -->
+                                <form method="POST" action="/admin/doctors/reject"
+                                      class="inline-form"
+                                      onsubmit="return confirm('Reject this doctor?');">
+                                    <input type="hidden" name="id" value="<?= $d['id'] ?>">
+                                    <button class="btn danger">Reject</button>
+                                </form>
+
+                            </div>
                         </td>
                     </tr>
                 <?php endforeach; else: ?>

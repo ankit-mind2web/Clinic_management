@@ -64,50 +64,86 @@ class DoctorController extends Controller
         ]);
     }
 
-    /* APPROVE DOCTOR */
+    /* APPROVE DOCTOR (PENDING → ACTIVE) */
     public function approve()
     {
         AdminAuth::check();
 
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $id = (int)($_POST['id'] ?? 0);
-            if ($id > 0) {
-                $this->userModel->updateStatus($id, 'active');
-            }
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            die('Invalid request');
         }
 
+        $id = (int)($_POST['id'] ?? 0);
+        if ($id <= 0) {
+            die('Invalid doctor');
+        }
+
+        $this->userModel->updateStatus($id, 'active');
+
+        $_SESSION['flash_message'] = 'Doctor approved successfully';
         header('Location: /admin/doctors/pending');
         exit;
     }
 
-    /* BLOCK DOCTOR */
+    /* REJECT DOCTOR (PENDING → BLOCKED) */
+    public function reject()
+    {
+        AdminAuth::check();
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            die('Invalid request');
+        }
+
+        $id = (int)($_POST['id'] ?? 0);
+        if ($id <= 0) {
+            die('Invalid doctor');
+        }
+
+        $this->userModel->updateStatus($id, 'blocked');
+
+        $_SESSION['flash_message'] = 'Doctor rejected successfully';
+        header('Location: /admin/doctors/pending');
+        exit;
+    }
+
+    /* BLOCK DOCTOR (ACTIVE → BLOCKED) */
     public function block()
     {
         AdminAuth::check();
 
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $id = (int)($_POST['id'] ?? 0);
-            if ($id > 0) {
-                $this->userModel->updateStatus($id, 'blocked');
-            }
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            die('Invalid request');
         }
 
+        $id = (int)($_POST['id'] ?? 0);
+        if ($id <= 0) {
+            die('Invalid doctor');
+        }
+
+        $this->userModel->updateStatus($id, 'blocked');
+
+        $_SESSION['flash_message'] = 'Doctor blocked';
         header('Location: /admin/doctors');
         exit;
     }
 
-    /* UNBLOCK DOCTOR */
+    /* UNBLOCK DOCTOR (BLOCKED → ACTIVE) */
     public function unblock()
     {
         AdminAuth::check();
 
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $id = (int)($_POST['id'] ?? 0);
-            if ($id > 0) {
-                $this->userModel->updateStatus($id, 'active');
-            }
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            die('Invalid request');
         }
 
+        $id = (int)($_POST['id'] ?? 0);
+        if ($id <= 0) {
+            die('Invalid doctor');
+        }
+
+        $this->userModel->updateStatus($id, 'active');
+
+        $_SESSION['flash_message'] = 'Doctor unblocked';
         header('Location: /admin/doctors');
         exit;
     }

@@ -1,0 +1,101 @@
+/* Page wrapper alignment with project layout */
+.page-title {
+    max-width: 1200px;
+    margin: 20px auto 15px auto;
+    padding: 0 20px;
+    font-size: 22px;
+    font-weight: 600;
+    color: #222;
+}
+
+/* Main booking box */
+.appointment-box {
+    max-width: 1200px;
+    margin: 0 auto 40px auto;
+    padding: 20px;
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+
+/* Label */
+.appointment-box label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #333;
+}
+
+/* Doctor dropdown */
+#doctor_id {
+    width: 100%;
+    max-width: 400px;
+    padding: 10px 12px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff;
+    outline: none;
+}
+
+#doctor_id:focus {
+    border-color: #2c7be5;
+}
+
+/* Slots container */
+.slots {
+    margin-top: 25px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 15px;
+}
+
+/* Slot buttons */
+.slot-btn {
+    padding: 12px 14px;
+    font-size: 14px;
+    background-color: #2c7be5;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    text-align: center;
+}
+
+.slot-btn:hover {
+    background-color: #1f5fc4;
+    transform: translateY(-1px);
+}
+
+.slot-btn:active {
+    transform: translateY(0);
+}
+
+/* No slots message */
+.empty {
+    grid-column: 1 / -1;
+    color: #777;
+    font-size: 14px;
+    font-style: italic;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .page-title,
+    .appointment-box {
+        padding: 0 15px;
+    }
+
+    #doctor_id {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .slot-btn {
+        font-size: 13px;
+        padding: 10px;
+    }
+}

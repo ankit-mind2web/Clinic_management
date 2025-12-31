@@ -62,7 +62,14 @@ $isDoctorMenuOpen =
         </li>
 
         <li>
-            <a href="/auth/logout">Logout</a>
+            <a href="/admin/patients"
+                class="<?= str_contains($current, '/admin/patients') ? 'active' : '' ?>">
+                Patients
+            </a>
+        </li>
+
+        <li>
+            <a href="/auth/logout" onclick="confirmlogout(event)">Logout</a>
         </li>
 
     </ul>

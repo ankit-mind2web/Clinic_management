@@ -15,17 +15,25 @@ class ProfileController extends Controller
             exit;
         }
 
-        $userId = $_SESSION['user']['id'];
+        $user   = $_SESSION['user'];
+        $userId = $user['id'];
+
+        /*  ADMIN APPROVAL CHECK */
+        $isApproved = ($user['status'] ?? 'pending') === 'active';
 
         $profileModel = new Profile();
         $specModel    = new DoctorSpecialization();
 
-        /* ===== FLASH MESSAGE (READ & CLEAR) ===== */
+        /* ===== FLASH MESSAGE ===== */
         $message = $_SESSION['flash_message'] ?? '';
         unset($_SESSION['flash_message']);
 
-        /* ===== HANDLE POST (PERSONAL PROFILE ONLY) ===== */
+        /* ===== HANDLE POST (BLOCK IF NOT APPROVED) ===== */
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+            if (!$isApproved) {
+                die('Access denied');
+            }
 
             $gender  = trim($_POST['gender'] ?? '');
             $dob     = trim($_POST['dob'] ?? '');
@@ -45,9 +53,10 @@ class ProfileController extends Controller
         }
 
         $this->view('doctor/profile/index', [
-            'profile'    => $profileModel->getByUserId($userId),
-            'doctorSpec' => $specModel->getByDoctorAll($userId),
-            'message'    => $message
+            'profile'     => $profileModel->getByUserId($userId),
+            'doctorSpec'  => $specModel->getByDoctorAll($userId),
+            'message'     => $message,
+            'isApproved'  => $isApproved
         ]);
     }
 
@@ -58,10 +67,16 @@ class ProfileController extends Controller
             exit;
         }
 
+        /*  BLOCK IF NOT APPROVED */
+        if (($_SESSION['user']['status'] ?? 'pending') !== 'active') {
+            $_SESSION['flash_message'] = 'Wait for admin approval to verify email';
+            header('Location: /doctor/profile');
+            exit;
+        }
+
         $doctorId = $_SESSION['user']['id'];
         $model    = new DoctorSpecialization();
 
-        /* MUST HAVE SPECIALIZATION BEFORE VERIFY */
         if (!$model->getByDoctorAll($doctorId)) {
             $_SESSION['flash_message'] = 'Add specialization before email verification';
             header('Location: /doctor/profile');

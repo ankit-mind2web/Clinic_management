@@ -16,24 +16,27 @@ include __DIR__ . '/../layout/sidebar.php';
         <table class="table">
             <tr>
                 <th style="width: 200px;">Name</th>
-                <td><?= htmlspecialchars($doctor['full_name']) ?></td>
+                <td><?= htmlspecialchars($doctor['full_name'] ?? '-', ENT_QUOTES, 'UTF-8') ?></td>
             </tr>
 
             <tr>
                 <th>Email</th>
-                <td><?= htmlspecialchars($doctor['email']) ?></td>
+                <td><?= htmlspecialchars($doctor['email'] ?? '-', ENT_QUOTES, 'UTF-8') ?></td>
             </tr>
 
             <tr>
                 <th>Mobile</th>
-                <td><?= htmlspecialchars($doctor['mobile'] ?? '-') ?></td>
+                <td><?= htmlspecialchars($doctor['mobile'] ?? '-', ENT_QUOTES, 'UTF-8') ?></td>
             </tr>
 
             <tr>
                 <th>Status</th>
                 <td>
-                    <span class="status <?= strtolower($doctor['status']) ?>">
-                        <?= ucfirst($doctor['status']) ?>
+                    <?php
+                        $status = $doctor['status'] ?? 'pending';
+                    ?>
+                    <span class="status <?= htmlspecialchars(strtolower($status), ENT_QUOTES, 'UTF-8') ?>">
+                        <?= htmlspecialchars(ucfirst($status), ENT_QUOTES, 'UTF-8') ?>
                     </span>
                 </td>
             </tr>

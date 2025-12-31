@@ -5,7 +5,7 @@
     <title>My Profile</title>
     <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/patient_profile.css">
     <?php require_once __DIR__ . '/../../layout/header.php'; ?>
-    
+
 </head>
 
 <body>
@@ -23,10 +23,12 @@
 
     // calculate age
     $age = '—';
-    if ($dob) {
+
+    if (!empty($dob)) {
         $birthDate = new DateTime($dob);
-        $today = new DateTime();
-        $age = $today->diff($birthDate)->y;
+        $today     = new DateTime();
+        $diff = $today->diff($birthDate);
+        $age = $diff->y . ' years, ' . $diff->m . ' months, ' . $diff->d . ' days';
     }
 
     // profile completeness

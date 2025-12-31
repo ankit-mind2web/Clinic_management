@@ -37,7 +37,7 @@ $isVerified = ($user['email_verified'] ?? 0) == 1;
         <?php endif; ?>
 
         <a href="/doctor/availability" class="action-btn">Set Availability</a>
-        <a href="/doctor/appointments" class="action-btn">View Appointments</a>
+        <a href="#" class="action-btn">View Appointments</a>
     </div>
 
 </div>

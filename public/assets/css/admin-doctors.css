@@ -26,6 +26,24 @@ td {
     color: #fff;
     margin-right: 6px;
 }
+.action-group {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.inline-form {
+    display: inline;
+}
+
+.btn.danger {
+    background: #dc3545;
+    color: #fff;
+}
+
+.btn.danger:hover {
+    background: #b02a37;
+}
 
 
 /* status */

@@ -47,6 +47,33 @@ class User extends Model
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
+    /* Get all patients with profile */
+    public function getPatients(): array
+    {
+        $sql = "
+        SELECT 
+            u.id,
+            u.full_name,
+            u.email,
+            u.mobile,
+            u.status,
+            u.created_at,
+            p.gender,
+            p.dob,
+            p.address
+        FROM users u
+        LEFT JOIN profile p ON p.user_id = u.id
+        WHERE u.role = 'patient'
+        ORDER BY u.created_at DESC
+    ";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+
 
 
     /* Find by email or mobile */
@@ -84,19 +111,30 @@ class User extends Model
     }
 
     // Doctor management (Admin)
-    /* Get all doctors */
     public function getDoctors(): array
     {
-        $stmt = $this->db->prepare(
-            "SELECT id, full_name, email, mobile, status, created_at
-             FROM users
-             WHERE role = 'doctor'
-             ORDER BY id DESC"
-        );
+        $sql = "
+        SELECT 
+            u.id,
+            u.full_name,
+            u.email,
+            u.mobile,
+            u.status,
+            u.created_at,
+            p.dob
+        FROM users u
+        LEFT JOIN profile p ON p.id = u.id
+        WHERE u.role = 'doctor'
+        ORDER BY u.created_at DESC
+    ";
+
+        $stmt = $this->db->prepare($sql);
         $stmt->execute();
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+
 
     /* Get pending doctors */
     public function getPendingDoctors(): array

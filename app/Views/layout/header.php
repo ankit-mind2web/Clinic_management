@@ -83,7 +83,7 @@ $initial = $username ? strtoupper($username[0]) : '';
                                 Profile Details
                             </a>
 
-                            <a href="<?= BASE_URL ?>/patient/appointment" class="dropdown-item">
+                            <a href="<?= BASE_URL ?>/patient/appointments" class="dropdown-item">
                                 <img src="<?= BASE_URL ?>/assets/images/add-user.png" class="dropdown-icon">
                                 Book Appointment
                             </a>
