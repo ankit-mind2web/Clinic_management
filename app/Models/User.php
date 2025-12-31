@@ -41,10 +41,10 @@ class User extends Model
          LIMIT ?"
         );
 
-        $stmt->bindValue(1, $limit, \PDO::PARAM_INT);
+        $stmt->bindValue(1, $limit, PDO::PARAM_INT);
         $stmt->execute();
 
-        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     /* Get all patients with profile */
@@ -72,9 +72,6 @@ class User extends Model
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-    
-
-
 
     /* Find by email or mobile */
     public function findByEmailOrMobile(string $login): ?array
