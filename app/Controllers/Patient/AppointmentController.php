@@ -8,23 +8,18 @@ use App\Models\Patient\AppointmentModel;
 
 class AppointmentController extends Controller
 {
-
-    //   LIST DOCTORS
-
+    //LIST DOCTORS
     public function index()
     {
         $availabilityModel = new DoctorAvailability();
         $doctors = $availabilityModel->getDoctorsWithAvailability();
-
 
         $this->view('patient/appointments/index', [
             'doctors' => $doctors
         ]);
     }
 
-
-    //   FETCH AVAILABLE SLOTS (AJAX)
-
+    //   FETCH AVAILABLE SLOTS (AJAX) 
     public function availability()
     {
         header('Content-Type: application/json');
@@ -35,16 +30,13 @@ class AppointmentController extends Controller
             return;
         }
 
-        $availabilityModel = new \App\Models\Doctor\DoctorAvailability();
+        $availabilityModel = new DoctorAvailability();
         echo json_encode(
             $availabilityModel->getAvailableSlotsForPatient((int)$doctorId)
         );
     }
 
-
-
-    //   BOOK APPOINTMENT (AJAX)
-
+    //   BOOK APPOINTMENT (AJAX)       
     public function book()
     {
         header('Content-Type: application/json');
@@ -57,30 +49,23 @@ class AppointmentController extends Controller
         $slotId    = $_POST['slot_id'] ?? null;
 
         if (!$patientId || !$slotId) {
-            echo json_encode([
-                'status' => 'error',
-                'message' => 'Invalid request'
-            ]);
-            return;
-        }
-
-        $availabilityModel = new DoctorAvailability();
-        $locked = $availabilityModel->bookSlot((int)$slotId);
-
-        if (!$locked) {
-            echo json_encode([
-                'status' => 'error',
-                'message' => 'Slot already booked'
-            ]);
+            echo json_encode(['status' => 'error', 'message' => 'Invalid request']);
             return;
         }
 
         $appointmentModel = new AppointmentModel();
-        $appointmentModel->create($patientId, $slotId);
+
+        // ✅ book strictly by slot_id
+        $success = $appointmentModel->bookBySlotId(
+            (int)$patientId,
+            (int)$slotId
+        );
 
         echo json_encode([
-            'status' => 'success',
-            'message' => 'Appointment booked successfully'
+            'status'  => $success ? 'success' : 'error',
+            'message' => $success
+                ? 'Appointment booked successfully'
+                : 'Slot already booked'
         ]);
     }
 }

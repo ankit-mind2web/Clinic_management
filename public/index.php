@@ -107,6 +107,8 @@ $routes = [
         '/admin/doctors/reject'  => [DoctorController::class, 'reject'],
 
         '/doctor/availability/store'  => [App\Controllers\Doctor\DoctorAvailabilityController::class, 'store'],
+        '/doctor/availability'        => [App\Controllers\Doctor\DoctorAvailabilityController::class, 'index'],
+
 
 
 

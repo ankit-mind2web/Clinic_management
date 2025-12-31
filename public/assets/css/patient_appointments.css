@@ -1,24 +1,25 @@
-/* Page wrapper alignment with project layout */
+/* PAGE TITLE */
 .page-title {
     max-width: 1200px;
-    margin: 20px auto 15px auto;
+    margin: 20px auto 15px;
     padding: 0 20px;
     font-size: 22px;
     font-weight: 600;
     color: #222;
 }
 
-/* Main booking box */
+
+/*   MAIN CONTAINER  */
 .appointment-box {
     max-width: 1200px;
-    margin: 0 auto 40px auto;
-    padding: 20px;
+    margin: 0 auto 40px;
+    padding: 22px;
     background: #ffffff;
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.08);
 }
 
-/* Label */
+/* FORM ELEMENTS  */
 .appointment-box label {
     display: block;
     font-size: 14px;
@@ -27,61 +28,88 @@
     color: #333;
 }
 
-/* Doctor dropdown */
 #doctor_id {
     width: 100%;
-    max-width: 400px;
+    max-width: 420px;
     padding: 10px 12px;
     font-size: 14px;
     border: 1px solid #ccc;
-    border-radius: 4px;
-    background-color: #fff;
-    outline: none;
+    border-radius: 6px;
+    background: #fff;
 }
 
 #doctor_id:focus {
+    outline: none;
     border-color: #2c7be5;
 }
 
-/* Slots container */
+
+/*   SEARCH BUTTON  */
+.primary-btn {
+    display: inline-block;
+    margin-top: 14px;
+    padding: 10px 22px;
+    background: #2c7be5;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.primary-btn:hover {
+    background: #1f5fc4;
+    transform: translateY(-1px);
+}
+
+.primary-btn:active {
+    transform: translateY(0);
+}
+
+/* SLOTS GRID  */
 .slots {
     margin-top: 25px;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 15px;
+    gap: 14px;
 }
 
-/* Slot buttons */
+
+/*   SLOT BUTTON  */
 .slot-btn {
     padding: 12px 14px;
-    font-size: 14px;
-    background-color: #2c7be5;
-    color: #ffffff;
-    border: none;
+    background: #e9f2ff;
+    color: #1f4fb2;
+    border: 1px solid #cfe0ff;
     border-radius: 6px;
+    font-size: 14px;
     cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.1s ease;
-    text-align: center;
+    text-align: left;
+    transition: all 0.2s ease;
 }
 
 .slot-btn:hover {
-    background-color: #1f5fc4;
-    transform: translateY(-1px);
+    background: #2c7be5;
+    color: #ffffff;
+    border-color: #2c7be5;
 }
 
 .slot-btn:active {
-    transform: translateY(0);
+    transform: scale(0.98);
 }
 
-/* No slots message */
+/*  EMPTY / INFO TEXT  */
 .empty {
     grid-column: 1 / -1;
-    color: #777;
+    padding: 10px 0;
     font-size: 14px;
+    color: #777;
     font-style: italic;
 }
 
-/* Responsive adjustments */
+/*  RESPONSIVE  */
 @media (max-width: 768px) {
     .page-title,
     .appointment-box {

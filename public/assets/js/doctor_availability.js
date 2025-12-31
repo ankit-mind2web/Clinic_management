@@ -1,25 +1,25 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', function () {
 
     const openBtn   = document.getElementById('openForm');
     const form      = document.getElementById('availabilityForm');
     const cancelBtn = document.getElementById('cancelForm');
 
+    // ⛔ Stop if not doctor availability page
     if (!openBtn || !form || !cancelBtn) {
-        console.error('Availability form elements missing');
         return;
     }
 
     /* =======================
        OPEN FORM
        ======================= */
-    openBtn.addEventListener('click', () => {
+    openBtn.addEventListener('click', function () {
         form.style.display = 'block';
     });
 
     /* =======================
        CANCEL FORM
        ======================= */
-    cancelBtn.addEventListener('click', () => {
+    cancelBtn.addEventListener('click', function () {
         form.reset();
         form.style.display = 'none';
     });
@@ -56,13 +56,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const startUtc = startLocal.toISOString().slice(0, 19).replace('T', ' ');
         const endUtc   = endLocal.toISOString().slice(0, 19).replace('T', ' ');
 
-        fetch('/doctor/availability/add', {
+        fetch('/doctor/availability/store', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
             body: new URLSearchParams({
                 start_utc: startUtc,
                 end_utc: endUtc,
-                status: type
+                 type: type 
             })
         })
         .then(res => res.json())

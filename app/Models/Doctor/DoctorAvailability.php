@@ -2,13 +2,15 @@
 
 namespace App\Models\Doctor;
 
+use App\Core\Database;
 use App\Core\Model;
+use DateTime;
 use PDO;
 
 class DoctorAvailability extends Model
 {
     /* =======================
-       CREATE SLOT (DOCTOR)
+       CREATE AVAILABILITY (DOCTOR)
        ======================= */
     public function createSlot(
         int $doctorId,
@@ -16,7 +18,7 @@ class DoctorAvailability extends Model
         string $endUtc,
         string $status
     ): void {
-        // Prevent overlapping slots
+        // prevent overlapping availability
         $checkSql = "
             SELECT id
             FROM doctor_availability
@@ -33,7 +35,7 @@ class DoctorAvailability extends Model
         ]);
 
         if ($stmt->rowCount() > 0) {
-            die('Overlapping slot not allowed');
+            die('Overlapping availability not allowed');
         }
 
         $insertSql = "
@@ -50,10 +52,13 @@ class DoctorAvailability extends Model
             ':end_utc'   => $endUtc,
             ':status'    => $status
         ]);
+
+        // 🔑 generate slots immediately
+        $this->generateSlots($doctorId, $startUtc, $endUtc);
     }
 
     /* =======================
-       DOCTOR VIEW (ALL SLOTS)
+       DOCTOR VIEW (AVAILABILITY)
        ======================= */
     public function getDoctorAvailability(int $doctorId): array
     {
@@ -61,7 +66,7 @@ class DoctorAvailability extends Model
             SELECT id, start_utc, end_utc, status
             FROM doctor_availability
             WHERE doctor_id = :doctor_id
-            ORDER BY start_utc ASC
+            ORDER BY start_utc
         ";
 
         $stmt = $this->db->prepare($sql);
@@ -78,37 +83,81 @@ class DoctorAvailability extends Model
         $sql = "
             SELECT DISTINCT u.id, u.full_name
             FROM users u
-            JOIN doctor_availability da
-                ON da.doctor_id = u.id
+            JOIN doctor_availability da ON da.doctor_id = u.id
             WHERE u.role = 'doctor'
               AND da.status = 'available'
               AND da.start_utc > NOW()
             ORDER BY u.full_name
         ";
 
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute();
+        return $this->db->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /* =======================
+       SLOT GENERATION (SYSTEM)
+       ======================= */
+    public function generateSlots(
+        int $doctorId,
+        string $startUtc,
+        string $endUtc
+    ): void {
+        $db = Database::getConnection();
+
+        $start = new DateTime($startUtc);
+        $end   = new DateTime($endUtc);
+
+        while ($start < $end) {
+            $slotStart = $start->format('Y-m-d H:i:s');
+            $start->modify('+30 minutes');
+            $slotEnd = $start->format('Y-m-d H:i:s');
+
+            $stmt = $db->prepare("
+                INSERT IGNORE INTO slots (doctor_id, start_utc, end_utc)
+                VALUES (:doctor_id, :start_utc, :end_utc)
+            ");
+
+            $stmt->execute([
+                ':doctor_id' => $doctorId,
+                ':start_utc' => $slotStart,
+                ':end_utc'   => $slotEnd
+            ]);
+        }
+    }
+
+    /* =======================
+       PATIENT VIEW (SLOTS)
+       ======================= */
+    public function getAvailableSlotsForPatient(int $doctorId): array
+    {
+        $db = Database::getConnection();
+
+        $stmt = $db->prepare("
+            SELECT id, start_utc, end_utc
+            FROM slots
+            WHERE doctor_id = :doctor_id
+              AND is_blocked = 0
+              AND start_utc > NOW()
+            ORDER BY start_utc
+        ");
+        $stmt->execute([':doctor_id' => $doctorId]);
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     /* =======================
-       PATIENT VIEW (AVAILABLE SLOTS)
+       SLOT BY ID (FOR BOOKING)
        ======================= */
-    public function getAvailableSlotsForPatient(int $doctorId): array
+    public function getSlotById(int $slotId): ?array
     {
-        $sql = "
-            SELECT da.id, da.start_utc, da.end_utc
-            FROM doctor_availability da
-            WHERE da.doctor_id = :doctor_id
-              AND da.status = 'available'
-              AND da.start_utc > NOW()
-            ORDER BY da.start_utc ASC
-        ";
+        $db = Database::getConnection();
 
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute([':doctor_id' => $doctorId]);
+        $stmt = $db->prepare("
+            SELECT id, doctor_id, start_utc, end_utc
+            FROM slots
+            WHERE id = :id
+        ");
+        $stmt->execute([':id' => $slotId]);
 
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
     }
 }
