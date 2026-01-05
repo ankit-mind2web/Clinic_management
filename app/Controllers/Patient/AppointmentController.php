@@ -38,24 +38,27 @@ class AppointmentController extends Controller
 
     //   BOOK APPOINTMENT (AJAX)       
     public function book()
-    {
-        header('Content-Type: application/json');
+{
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
 
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
+    header('Content-Type: application/json');
 
-        $patientId = $_SESSION['user']['id'] ?? null;
-        $slotId    = $_POST['slot_id'] ?? null;
+    $patientId = $_SESSION['user']['id'] ?? null;
+    $slotId    = $_POST['slot_id'] ?? null;
 
-        if (!$patientId || !$slotId) {
-            echo json_encode(['status' => 'error', 'message' => 'Invalid request']);
-            return;
-        }
+    if (!$patientId || !$slotId) {
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'User not logged in or invalid slot'
+        ]);
+        return;
+    }
 
-        $appointmentModel = new AppointmentModel();
+    $appointmentModel = new AppointmentModel();
 
-        // ✅ book strictly by slot_id
+    try {
         $success = $appointmentModel->bookBySlotId(
             (int)$patientId,
             (int)$slotId
@@ -67,5 +70,13 @@ class AppointmentController extends Controller
                 ? 'Appointment booked successfully'
                 : 'Slot already booked'
         ]);
+
+    } catch (\Throwable $e) {
+        echo json_encode([
+            'status'  => 'error',
+            'message' => $e->getMessage()
+        ]);
     }
+}
+
 }

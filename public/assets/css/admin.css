@@ -70,9 +70,9 @@
     padding: 4px 10px;
     border-radius: 20px;
     font-size: 11px;
-    color: #fff;
+    color: #eeeded;
 }
-
+.status.confirmed { background: #0b7041; color: #fff; }
 .status.active { background: #00c292; }
 .status.pending { background: #fb9678; }
 .status.blocked {

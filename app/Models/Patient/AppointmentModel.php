@@ -8,12 +8,7 @@ use Exception;
 
 class AppointmentModel extends Model
 {
-    /**
-     * BOOK APPOINTMENT (CORRECT & FINAL)
-     * - Book strictly by slot_id
-     * - Prevents double booking
-     * - Blocks slot atomically
-     */
+    /* Fetch available slots for a doctor */
     public function bookBySlotId(int $patientId, int $slotId): bool
     {
         try {
@@ -41,7 +36,7 @@ class AppointmentModel extends Model
                 INSERT INTO appointments
                     (slot_id, patient_id, doctor_id, start_utc, end_utc, status, created_at)
                 VALUES
-                    (:slot_id, :patient_id, :doctor_id, :start_utc, :end_utc, 'booked', NOW())
+                    (:slot_id, :patient_id, :doctor_id, :start_utc, :end_utc, 'confirmed', NOW())
             ");
 
             $insertStmt->execute([
@@ -65,7 +60,7 @@ class AppointmentModel extends Model
 
         } catch (Exception $e) {
             $this->db->rollBack();
-            return false;
+            throw $e;
         }
     }
 }

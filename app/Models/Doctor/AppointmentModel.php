@@ -35,6 +35,28 @@ class AppointmentModel extends Model
         $stmt->execute([$doctorId]);
         return (int) $stmt->fetchColumn();
     }
+     public function getAppointmentsByDoctor(int $doctorId): array
+    {
+        $sql = "
+            SELECT 
+                a.id,
+                a.start_utc,
+                a.end_utc,
+                a.status,
+                u.full_name AS patient_name,
+                u.email AS patient_email
+            FROM appointments a
+            JOIN users u ON u.id = a.patient_id
+            WHERE a.doctor_id = :doctor_id
+            ORDER BY a.start_utc ASC
+        ";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['doctor_id' => $doctorId]);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
 
     /* =======================
        RECENT APPOINTMENTS

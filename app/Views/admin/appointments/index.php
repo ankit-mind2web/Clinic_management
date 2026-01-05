@@ -55,19 +55,24 @@ include __DIR__ . '/../layout/sidebar.php';
                     </tr>
                 <?php else: ?>
                     <?php foreach ($appointments as $row): ?>
+                        <?php
+                        $start = new DateTime($row['start_utc'], new DateTimeZone('UTC'));
+                        $start->setTimezone(new DateTimeZone(date_default_timezone_get()));
+                        ?>
                         <tr>
                             <td><?= htmlspecialchars($row['id']) ?></td>
                             <td><?= htmlspecialchars($row['patient_name']) ?></td>
                             <td><?= htmlspecialchars($row['doctor_name']) ?></td>
-                            <td><?= htmlspecialchars($row['start_utc']) ?></td>
+                            <td><?= $start->format('d M Y, h:i A') ?></td>
                             <td>
                                 <span class="status <?= strtolower($row['status']) ?>">
                                     <?= ucfirst($row['status']) ?>
                                 </span>
                             </td>
                             <td>
-                                <a href="/admin/appointments/show?id=<?= $row['id'] ?>"
-                                    class="btn info">View</a>
+                                <a href="/admin/appointments/show?id=<?= $row['id'] ?>" class="btn info">
+                                    View
+                                </a>
                             </td>
                         </tr>
                     <?php endforeach; ?>

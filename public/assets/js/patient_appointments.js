@@ -81,24 +81,19 @@ document.addEventListener('DOMContentLoaded', function () {
 
 //   BOOK SLOT
 function bookSlot(slotId) {
-    const formData = new FormData();
-    formData.append('slot_id', slotId);
-
     fetch(window.BASE_URL + '/patient/appointments/book', {
         method: 'POST',
-        credentials: 'same-origin', // ensure session is sent
-        body: formData
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: 'slot_id=' + encodeURIComponent(slotId)
     })
-    .then(res => {
-        if (!res.ok) throw new Error('HTTP ' + res.status);
-        return res.json();
-    })
+    .then(res => res.json())
     .then(data => {
         console.log('Booking response:', data);
         alert(data.message);
 
         if (data.status === 'success') {
-            // reload slots instead of full page
             document.getElementById('searchSlots').click();
         }
     })
@@ -107,4 +102,3 @@ function bookSlot(slotId) {
         alert('Booking failed');
     });
 }
-

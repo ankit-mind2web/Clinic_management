@@ -10,12 +10,21 @@ class AppointmentController extends Controller
 {
     public function index()
     {
-        DoctorAuth::check();
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
 
-        $doctorId = $_SESSION['user']['id'];
+        $doctorId = $_SESSION['user']['id'] ?? null;
+
+        if (!$doctorId) {
+            die('Unauthorized');
+        }
+
+        $model = new AppointmentModel();
+        $appointments = $model->getAppointmentsByDoctor($doctorId);
 
         $this->view('doctor/appointments/index', [
-            'appointments' => (new AppointmentModel())->getAll($doctorId)
+            'appointments' => $appointments
         ]);
     }
 

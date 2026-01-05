@@ -1,0 +1,112 @@
+* {
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+    margin: 0;
+    background: #f4f6f9;
+}
+
+.main {
+    padding: 30px;
+}
+
+/* TOP BAR */
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.topbar h2 {
+    margin: 0;
+    color: #333;
+}
+
+.topbar a {
+    color: #4b6cb7;
+    font-weight: bold;
+}
+
+.topbar a:hover {
+    text-decoration: underline;
+}
+
+/* PANEL */
+.panel {
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    max-width: 800px;
+}
+
+/* TABLE */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th,
+.table td {
+    padding: 14px 16px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+.table th {
+    width: 35%;
+    background: #f7f8fc;
+    color: #333;
+    font-weight: 600;
+}
+
+.table td {
+    color: #555;
+}
+
+.table tr:last-child th,
+.table tr:last-child td {
+    border-bottom: none;
+}
+
+/* STATUS BADGES */
+.status {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: bold;
+    display: inline-block;
+    color: #fff;
+}
+
+/* Status colors */
+.status.confirmed {
+    background: #28a745;
+}
+
+.status.pending {
+    background: #ffc107;
+    color: #000;
+}
+
+.status.cancelled {
+    background: #dc3545;
+}
+
+.status.completed {
+    background: #6c757d;
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+    .panel {
+        padding: 15px;
+    }
+
+    .table th {
+        width: 45%;
+    }
+}

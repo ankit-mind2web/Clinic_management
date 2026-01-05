@@ -21,7 +21,7 @@ include __DIR__ . '/../../layout/header.php';
         <?php endforeach; ?>
     </select>
 
-    <!-- 🔍 SEARCH BUTTON -->
+    <!--  SEARCH BUTTON -->
     <button id="searchSlots" class="primary-btn">
         Search Available Slots
     </button>

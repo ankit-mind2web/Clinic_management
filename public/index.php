@@ -47,7 +47,7 @@ $routes = [
 
         //appointment
         '/admin/appointments'      => [AppointmentController::class, 'index'],
-        '/admin/appointments/view' => [AppointmentController::class, 'show'],
+        '/admin/appointments/show' => [AppointmentController::class, 'show'],
 
         //specialization
         '/admin/specializations'        => [SpecializationController::class, 'index'],
@@ -57,7 +57,7 @@ $routes = [
 
         //doctor
         '/doctor/dashboard'        => [DoctorDashboardController::class, 'index'],
-        '/doctor/appointments'     => [AppointmentController::class, 'index'],
+        '/doctor/appointments'     => [DoctorAppointmentController::class, 'index'],
         '/doctor/appointments/view' => [DoctorAppointmentController::class, 'show'],
         '/doctor/send-verification' => [App\Controllers\Doctor\ProfileController::class, 'sendVerification'],
         '/doctor/profile'           => [DoctorProfileController::class, 'index'],
