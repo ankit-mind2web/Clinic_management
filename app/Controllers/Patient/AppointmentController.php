@@ -38,45 +38,61 @@ class AppointmentController extends Controller
 
     //   BOOK APPOINTMENT (AJAX)       
     public function book()
-{
-    if (session_status() === PHP_SESSION_NONE) {
-        session_start();
+    {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        header('Content-Type: application/json');
+
+        // must be logged in
+        if (empty($_SESSION['user'])) {
+            echo json_encode([
+                'status'  => 'error',
+                'message' => 'User not logged in'
+            ]);
+            return;
+        }
+
+        // 🔒 EMAIL VERIFICATION CHECK (IMPORTANT)
+        if ((int)($_SESSION['user']['email_verified'] ?? 0) !== 1) {
+            echo json_encode([
+                'status'  => 'error',
+                'message' => 'Please verify your email before booking an appointment'
+            ]);
+            return;
+        }
+
+        $patientId = $_SESSION['user']['id'];
+        $slotId    = $_POST['slot_id'] ?? null;
+
+        if (!$slotId) {
+            echo json_encode([
+                'status'  => 'error',
+                'message' => 'Invalid slot'
+            ]);
+            return;
+        }
+
+        $appointmentModel = new AppointmentModel();
+
+        try {
+            $success = $appointmentModel->bookBySlotId(
+                (int)$patientId,
+                (int)$slotId
+            );
+
+            echo json_encode([
+                'status'  => $success ? 'success' : 'error',
+                'message' => $success
+                    ? 'Appointment booked successfully'
+                    : 'Slot already booked'
+            ]);
+        } catch (\Throwable $e) {
+            echo json_encode([
+                'status'  => 'error',
+                'message' => 'Booking failed'
+            ]);
+        }
     }
-
-    header('Content-Type: application/json');
-
-    $patientId = $_SESSION['user']['id'] ?? null;
-    $slotId    = $_POST['slot_id'] ?? null;
-
-    if (!$patientId || !$slotId) {
-        echo json_encode([
-            'status' => 'error',
-            'message' => 'User not logged in or invalid slot'
-        ]);
-        return;
-    }
-
-    $appointmentModel = new AppointmentModel();
-
-    try {
-        $success = $appointmentModel->bookBySlotId(
-            (int)$patientId,
-            (int)$slotId
-        );
-
-        echo json_encode([
-            'status'  => $success ? 'success' : 'error',
-            'message' => $success
-                ? 'Appointment booked successfully'
-                : 'Slot already booked'
-        ]);
-
-    } catch (\Throwable $e) {
-        echo json_encode([
-            'status'  => 'error',
-            'message' => $e->getMessage()
-        ]);
-    }
-}
-
 }

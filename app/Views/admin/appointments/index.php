@@ -87,8 +87,7 @@ include __DIR__ . '/../layout/sidebar.php';
 </div>
 
 <!-- COMMON SEARCH + FILTER JS -->
-<script src="/assets/js/common_search.js"></script>
 <script src="/assets/js/common_sort.js"></script>
-<script src="/assets/js/appointment-filter.js"></script>
+<script src="/assets/js/appointment_filter.js"></script>
 
 <?php include __DIR__ . '/../layout/footer.php'; ?>

@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Core\Controller;
 use App\Core\Database;
 use App\Services\AuthService;
+use App\Helpers\Mailer;
 use PDO;
 
 class AuthController extends Controller
@@ -13,7 +14,6 @@ class AuthController extends Controller
 
     public function __construct()
     {
-        // start session if not started
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
@@ -21,57 +21,50 @@ class AuthController extends Controller
         $this->authService = new AuthService();
     }
 
-    //  REGISTER 
+    // ================= REGISTER =================
     public function register()
     {
-        // GET request → show register page
+        // GET → show register page
         if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             $this->view('auth/register');
             return;
         }
 
-        // POST request → AJAX only
+        // POST → AJAX
         header('Content-Type: application/json');
         ob_clean();
 
-        // collect inputs
         $fullName = trim($_POST['full_name'] ?? '');
         $email    = trim($_POST['email'] ?? '');
         $mobile   = trim($_POST['mobile'] ?? '');
         $password = trim($_POST['password'] ?? '');
         $role     = trim($_POST['role'] ?? '');
 
-        // required field validation
         if ($fullName === '' || $email === '' || $mobile === '' || $password === '' || $role === '') {
             echo json_encode(['status' => 'error', 'message' => 'All fields are required']);
             exit;
         }
 
-        // role validation
         if (!in_array($role, ['patient', 'doctor'], true)) {
             echo json_encode(['status' => 'error', 'message' => 'Invalid role']);
             exit;
         }
 
-        // full name validation (letters and spaces, 3–50 chars)
         if (!preg_match('/^[A-Za-z ]{3,50}$/', $fullName)) {
             echo json_encode(['status' => 'error', 'message' => 'Invalid full name']);
             exit;
         }
 
-        // email format validation
         if (!preg_match('/^[\w.-]{1,25}@([\w-]+\.)+[\w-]{2,4}$/', $email)) {
             echo json_encode(['status' => 'error', 'message' => 'Invalid email format']);
             exit;
         }
 
-        // mobile validation (exactly 10 digits)
         if (!preg_match('/^\d{10}$/', $mobile)) {
             echo json_encode(['status' => 'error', 'message' => 'Invalid mobile number']);
             exit;
         }
 
-        // password strength validation
         if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/', $password)) {
             echo json_encode([
                 'status' => 'error',
@@ -80,8 +73,8 @@ class AuthController extends Controller
             exit;
         }
 
-        // call service to register user
-        $success = $this->authService->register([
+        // Register user
+        $userId = $this->authService->register([
             'full_name' => $fullName,
             'email'     => $email,
             'mobile'    => $mobile,
@@ -89,27 +82,54 @@ class AuthController extends Controller
             'role'      => $role
         ]);
 
-        // duplicate email or mobile
-        if (!$success) {
+        if (!$userId) {
             echo json_encode(['status' => 'error', 'message' => 'Email or mobile already exists']);
             exit;
         }
 
-        // success response
+        // ================= EMAIL VERIFICATION =================
+        $token  = bin2hex(random_bytes(32));
+        $expiry = date('Y-m-d H:i:s', strtotime('+24 hours'));
+
+        $db = Database::getConnection();
+        $stmt = $db->prepare("
+            UPDATE users
+            SET email_verify_token = ?,
+                email_token_expires = ?
+            WHERE id = ?
+        ");
+        $stmt->execute([$token, $expiry, $userId]);
+
+        $verifyLink = BASE_URL . '/auth/verify-email?token=' . $token;
+
+        $emailBody = "
+            <h3>Email Verification</h3>
+            <p>Hello {$fullName},</p>
+            <p>Please verify your email by clicking the button below:</p>
+            <p>
+                <a href='{$verifyLink}'
+                   style='display:inline-block;padding:10px 15px;
+                          background:#4b6cb7;color:#fff;
+                          text-decoration:none;border-radius:5px;'>
+                    Verify Email
+                </a>
+            </p>
+            <p>This link will expire in 24 hours.</p>
+        ";
+
+        Mailer::send($email, 'Verify Your Email', $emailBody);
+
         echo json_encode([
-            'status'   => 'success',
+            'status'  => 'success',
+            'message' => 'Registration successful. Please verify your email.',
             'redirect' => '/auth/login'
         ]);
         exit;
     }
 
-    //  LOGIN 
+    // ================= LOGIN =================
     public function login()
     {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-
         if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             $this->view('auth/login');
             return;
@@ -161,8 +181,7 @@ class AuthController extends Controller
         exit;
     }
 
-
-    // verify email link
+    // ================= VERIFY EMAIL =================
     public function verifyEmail()
     {
         if (session_status() === PHP_SESSION_NONE) {
@@ -176,11 +195,12 @@ class AuthController extends Controller
 
         $db = Database::getConnection();
 
-        $stmt = $db->prepare(
-            "SELECT id, role, email_token_expires 
-            FROM users 
-            WHERE email_verify_token = ?"
-        );
+        // find user by token
+        $stmt = $db->prepare("
+        SELECT id, role, email_token_expires
+        FROM users
+        WHERE email_verify_token = ?
+    ");
         $stmt->execute([$token]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -192,39 +212,43 @@ class AuthController extends Controller
             die('Verification link expired');
         }
 
-        $stmt = $db->prepare(
-            "UPDATE users 
-            SET email_verified = 1,
+        //  mark email verified
+        $stmt = $db->prepare("
+        UPDATE users
+        SET email_verified = 1,
             email_verify_token = NULL,
             email_token_expires = NULL
-            WHERE id = ?"
-        );
+        WHERE id = ?
+    ");
         $stmt->execute([$user['id']]);
 
-        // update session
+        // update profile status also
+        $stmt = $db->prepare("
+        UPDATE profile
+        SET status = 'Verified'
+        WHERE user_id = ?
+    ");
+        $stmt->execute([$user['id']]);
+
+        // update session if logged in
         if (isset($_SESSION['user']) && $_SESSION['user']['id'] == $user['id']) {
             $_SESSION['user']['email_verified'] = 1;
         }
 
         // redirect by role
-        if ($user['role'] === 'doctor') {
-            header('Location: /doctor/specialization');
-        } else {
-            header('Location: /patient/profile');
-        }
-
+        header('Location: ' . ($user['role'] === 'doctor'
+            ? '/doctor/specialization'
+            : '/patient/profile'
+        ));
         exit;
     }
 
 
-    //  LOGOUT 
+    // ================= LOGOUT =================
     public function logout()
     {
-        // clear session
         session_unset();
         session_destroy();
-
-        // redirect to login
         header('Location: /auth/login');
         exit;
     }

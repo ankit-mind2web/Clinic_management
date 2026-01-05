@@ -4,7 +4,6 @@ $title = 'Patients';
 include __DIR__ . '/../layout/header.php';
 include __DIR__ . '/../layout/sidebar.php';
 ?>
-<link rel="stylesheet" href="/assets/css/admin-patients.css">
 
 <div class="main">
     <div class="topbar">

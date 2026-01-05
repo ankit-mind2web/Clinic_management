@@ -14,52 +14,51 @@ class Profile
         $this->db = Database::getConnection();
     }
 
-    // get profile by user id (profile.id = users.id)
+    // get profile by user_id
     public function getByUserId(int $userId): ?array
     {
-        $sql = "SELECT * FROM profile WHERE id = :id LIMIT 1";
+        $sql = "SELECT * FROM profile WHERE user_id = :user_id LIMIT 1";
         $stmt = $this->db->prepare($sql);
-        $stmt->execute(['id' => $userId]);
+        $stmt->execute(['user_id' => $userId]);
 
-        $profile = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $profile ?: null;
+        return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
     }
 
-    // insert or update profile
-    public function saveOrUpdate(int $userId, string $gender, string $dob, string $address): void
-    {
-        // check if profile exists
-        $exists = $this->getByUserId($userId);
+    // insert or update profile (CORRECT)
+    public function saveOrUpdate(int $userId, string $gender, string $dob, string $address, int $emailVerified): void
+{
+    $status = $emailVerified === 1 ? 'Verified' : 'Pending';
 
-        if ($exists) {
-            // update
-            $sql = "UPDATE profile
-                    SET gender = :gender,
-                        dob = :dob,
-                        address = :address
-                    WHERE id = :id";
-        } else {
-            // insert
-            $sql = "INSERT INTO profile (id, gender, dob, address, status)
-                    VALUES (:id, :gender, :dob, :address, 'Verified')";
-        }
+    $sql = "
+        INSERT INTO profile (user_id, gender, dob, address, status)
+        VALUES (:user_id, :gender, :dob, :address, :status)
+        ON DUPLICATE KEY UPDATE
+            gender  = VALUES(gender),
+            dob     = VALUES(dob),
+            address = VALUES(address),
+            status  = VALUES(status)
+    ";
 
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute([
-            'id'      => $userId,
-            'gender'  => $gender,
-            'dob'     => $dob,
-            'address' => $address
-        ]);
-    }
+    $stmt = $this->db->prepare($sql);
+    $stmt->execute([
+        'user_id' => $userId,
+        'gender'  => $gender,
+        'dob'     => $dob,
+        'address' => $address,
+        'status'  => $status
+    ]);
+}
 
-    // save email verification token in users table
+
+    // save email verification token
     public function saveEmailToken(int $userId, string $token, string $expiry): void
     {
-        $sql = "UPDATE users
-                SET email_verify_token = :token,
-                    email_token_expires = :expiry
-                WHERE id = :id";
+        $sql = "
+            UPDATE users
+            SET email_verify_token = :token,
+                email_token_expires = :expiry
+            WHERE id = :id
+        ";
 
         $stmt = $this->db->prepare($sql);
         $stmt->execute([
@@ -69,15 +68,16 @@ class Profile
         ]);
     }
 
-    // verify email using token
+    // verify email
     public function verifyEmailByToken(string $token): ?array
     {
-        // find user with valid token
-        $sql = "SELECT id
-                FROM users
-                WHERE email_verify_token = :token
-                  AND email_token_expires > NOW()
-                LIMIT 1";
+        $sql = "
+            SELECT id
+            FROM users
+            WHERE email_verify_token = :token
+              AND email_token_expires > NOW()
+            LIMIT 1
+        ";
 
         $stmt = $this->db->prepare($sql);
         $stmt->execute(['token' => $token]);
@@ -87,12 +87,13 @@ class Profile
             return null;
         }
 
-        // mark email as verified and clear token
-        $update = "UPDATE users
-                   SET email_verified = 1,
-                       email_verify_token = NULL,
-                       email_token_expires = NULL
-                   WHERE id = :id";
+        $update = "
+            UPDATE users
+            SET email_verified = 1,
+                email_verify_token = NULL,
+                email_token_expires = NULL
+            WHERE id = :id
+        ";
 
         $stmt = $this->db->prepare($update);
         $stmt->execute(['id' => $user['id']]);
