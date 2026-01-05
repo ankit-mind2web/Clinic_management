@@ -40,7 +40,7 @@ class ProfileController extends Controller
             if ($gender === '' || $dob === '' || $address === '') {
                 $message = 'All fields are required';
             } else {
-                $profileModel->saveOrUpdate($userId, $gender, $dob, $address);
+                $profileModel->saveOrUpdate($userId, $gender, $dob, $address, $emailVerified = (int)($_SESSION['user']['email_verified'] ?? 0));
                 $message = 'Profile saved successfully';
             }
         }

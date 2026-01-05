@@ -3,8 +3,8 @@
 namespace App\Controllers\Doctor;
 
 use App\Core\Controller;
-use App\Models\Doctor\DoctorProfile;
 use App\Models\Doctor\DoctorSpecialization;
+use App\Models\Profile;
 
 class ProfileController extends Controller
 {
@@ -15,32 +15,37 @@ class ProfileController extends Controller
             exit;
         }
 
-        $user     = $_SESSION['user'];
-        $userId   = $user['id'];
+        $user   = $_SESSION['user'];
+        $userId = $user['id'];
+
+        /*  ADMIN APPROVAL CHECK */
         $isApproved = ($user['status'] ?? 'pending') === 'active';
 
-        $profileModel = new DoctorProfile();
+        $profileModel = new Profile();
         $specModel    = new DoctorSpecialization();
 
+        /* ===== FLASH MESSAGE ===== */
         $message = $_SESSION['flash_message'] ?? '';
         unset($_SESSION['flash_message']);
 
+        /* ===== HANDLE POST (BLOCK IF NOT APPROVED) ===== */
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             if (!$isApproved) {
                 die('Access denied');
             }
 
-            $bio        = trim($_POST['bio'] ?? '');
-            $experience = (int)($_POST['experience'] ?? 0);
+            $gender  = trim($_POST['gender'] ?? '');
+            $dob     = trim($_POST['dob'] ?? '');
+            $address = trim($_POST['address'] ?? '');
 
-            if ($bio === '' || $experience <= 0) {
+            if ($gender === '' || $dob === '' || $address === '') {
                 $_SESSION['flash_message'] = 'All fields are required';
                 header('Location: /doctor/profile?edit=1');
                 exit;
             }
 
-            $profileModel->save($userId, $bio, $experience);
+            $profileModel->saveOrUpdate($userId, $gender, $dob, $address, $emailVerified = (int)($user['email_verified'] ?? 0));
 
             $_SESSION['flash_message'] = 'Profile updated successfully';
             header('Location: /doctor/profile');
@@ -48,10 +53,10 @@ class ProfileController extends Controller
         }
 
         $this->view('doctor/profile/index', [
-            'profile'    => $profileModel->get($userId),
-            'doctorSpec' => $specModel->getByDoctorAll($userId),
-            'message'    => $message,
-            'isApproved' => $isApproved
+            'profile'     => $profileModel->getByUserId($userId),
+            'doctorSpec'  => $specModel->getByDoctorAll($userId),
+            'message'     => $message,
+            'isApproved'  => $isApproved
         ]);
     }
 
@@ -62,6 +67,7 @@ class ProfileController extends Controller
             exit;
         }
 
+        /*  BLOCK IF NOT APPROVED */
         if (($_SESSION['user']['status'] ?? 'pending') !== 'active') {
             $_SESSION['flash_message'] = 'Wait for admin approval to verify email';
             header('Location: /doctor/profile');
@@ -69,23 +75,25 @@ class ProfileController extends Controller
         }
 
         $doctorId = $_SESSION['user']['id'];
+        $model    = new DoctorSpecialization();
 
-        $specModel = new DoctorSpecialization();
-        if (!$specModel->getByDoctorAll($doctorId)) {
-            $_SESSION['flash_message'] = 'Add specialization before email verification';
-            header('Location: /doctor/profile');
-            exit;
-        }
-
-        $profileModel = new DoctorProfile();
+        // if (!$model->getByDoctorAll($doctorId)) {
+        //     $_SESSION['flash_message'] = 'Add specialization before email verification';
+        //     header('Location: /doctor/profile');
+        //     exit;
+        // }
 
         $token  = bin2hex(random_bytes(32));
         $expiry = date('Y-m-d H:i:s', strtotime('+24 hours'));
 
-        $profileModel->saveToken($doctorId, $token, $expiry);
+        $model->saveToken($doctorId, $token, $expiry);
 
-        $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
-        $link   = $scheme . '://' . $_SERVER['HTTP_HOST'] . '/auth/verify-email?token=' . $token;
+        $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+            ? 'https'
+            : 'http';
+
+        $link = $scheme . '://' . $_SERVER['HTTP_HOST']
+            . '/auth/verify-email?token=' . $token;
 
         file_put_contents(
             __DIR__ . '/../../../storage/email_log.txt',

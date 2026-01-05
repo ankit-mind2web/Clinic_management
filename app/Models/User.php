@@ -109,8 +109,8 @@ class User extends Model
 
     // Doctor management (Admin)
     public function getDoctors(): array
-    {
-        $sql = "
+{
+    $sql = "
         SELECT 
             u.id,
             u.full_name,
@@ -120,17 +120,16 @@ class User extends Model
             u.created_at,
             p.dob
         FROM users u
-        LEFT JOIN profile p ON p.id = u.id
+        LEFT JOIN profile p ON p.user_id = u.id
         WHERE u.role = 'doctor'
         ORDER BY u.created_at DESC
     ";
 
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute();
+    $stmt = $this->db->prepare($sql);
+    $stmt->execute();
 
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 
 
     /* Get pending doctors */
