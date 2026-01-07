@@ -15,7 +15,7 @@ body {
     background: #ffffff;
     padding: 25px;
     border-radius: 10px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
 }
 
 .page-header {
@@ -58,7 +58,8 @@ thead {
     color: #fff;
 }
 
-th, td {
+th,
+td {
     padding: 12px 14px;
     text-align: left;
 }
@@ -95,6 +96,33 @@ tbody tr:hover {
 
 .status.completed {
     background: #6c757d;
+}
+
+/* Button styles */
+.btn {
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    color: #fff;
+    margin-right: 5px;
+}
+
+.btn.success {
+    background: #28a745;
+}
+
+.btn.success:hover {
+    background: #218838;
+}
+
+.btn.danger {
+    background: #dc3545;
+}
+
+.btn.danger:hover {
+    background: #c82333;
 }
 
 .empty {

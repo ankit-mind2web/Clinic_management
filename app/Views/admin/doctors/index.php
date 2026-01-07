@@ -96,7 +96,8 @@ include __DIR__ . '/../layout/sidebar.php';
             </table>
         </div>
 
-        <?php include __DIR__ . '/../../partials/pagination.php'; ?>
+        <!-- Pagination -->
+        <?= $pagination ?? '' ?>
     </div>
 </div>
 <script src="/assets/js/common_sort.js"></script>

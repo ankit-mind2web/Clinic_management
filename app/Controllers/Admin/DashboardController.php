@@ -18,7 +18,7 @@ class DashboardController extends Controller
         $appointmentModel     = new AppointmentModel();
         $specializationModel  = new SpecializationModel();
 
-        $doctors = $userModel->getAllDoctors(5);
+        $doctors = $userModel->getAllDoctors(7);
 
         $data = [
             'totalPatients'       => $userModel->countByRole('patient'),
@@ -26,7 +26,7 @@ class DashboardController extends Controller
             'pendingDoctors'      => $userModel->countPendingDoctors(),
             'totalAppointments'   => $appointmentModel->countAll(),
             'totalSpecializations'=> $specializationModel->countAll(),
-            'recentAppointments'  => $appointmentModel->getRecent(5),
+            'recentAppointments'  => $appointmentModel->getRecent(7),
             'doctors'             => $doctors
         ];
 

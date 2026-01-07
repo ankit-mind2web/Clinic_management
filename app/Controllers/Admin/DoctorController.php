@@ -20,8 +20,17 @@ class DoctorController extends Controller
     {
         AdminAuth::check();
 
+        $page  = (int)($_GET['page'] ?? 1);
+        $limit = 10;
+        
+        $totalItems = $this->userModel->countDoctors();
+        $pagination = new \App\Helpers\Pagination($totalItems, $limit, $page, '/admin/doctors');
+        
+        $doctors = $this->userModel->getDoctorsPaginated($limit, $pagination->getOffset());
+
         $this->view('admin/doctors/index', [
-            'doctors' => $this->userModel->getDoctors()
+            'doctors'    => $doctors,
+            'pagination' => $pagination->getLinks()
         ]);
     }
 
@@ -45,15 +54,7 @@ class DoctorController extends Controller
             die('Invalid doctor');
         }
 
-        $doctors = $this->userModel->getDoctors();
-        $doctor  = null;
-
-        foreach ($doctors as $d) {
-            if ((int)$d['id'] === $id) {
-                $doctor = $d;
-                break;
-            }
-        }
+        $doctor = $this->userModel->findDoctorById($id);
 
         if (!$doctor) {
             die('Doctor not found');

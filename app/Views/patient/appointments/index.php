@@ -11,6 +11,7 @@ include __DIR__ . '/../../layout/header.php';
 
 <div class="appointment-box">
 
+    <!-- SELECT DOCTOR -->
     <label for="doctor_id">Select Doctor</label>
     <select id="doctor_id">
         <option value="">-- Select Doctor --</option>
@@ -21,17 +22,28 @@ include __DIR__ . '/../../layout/header.php';
         <?php endforeach; ?>
     </select>
 
-    <!--  SEARCH BUTTON -->
+    <!-- SELECT DATE -->
+    <label for="appointment_date">Select Date</label>
+    <input
+        type="date"
+        id="appointment_date"
+        min="<?= date('Y-m-d') ?>"
+    >
+
+    <!-- SEARCH BUTTON -->
     <button id="searchSlots" class="primary-btn">
         Search Available Slots
     </button>
 
     <div id="slots" class="slots">
-        <p class="empty">Select doctor and click search</p>
+        <p class="empty">Select doctor and date, then click search</p>
     </div>
 
 </div>
-<script>window.BASE_URL = "<?= BASE_URL ?>";</script>
+
+<script>
+    window.BASE_URL = "<?= BASE_URL ?>";
+</script>
 <script src="<?= BASE_URL ?>/assets/js/patient_appointments.js"></script>
 
 <?php include __DIR__ . '/../../layout/footer.php'; ?>

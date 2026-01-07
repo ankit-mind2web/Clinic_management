@@ -61,6 +61,13 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
+        // Disable the button to prevent double-click
+        const submitBtn = form.querySelector('button[type="submit"]');
+        if(submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.innerText = 'Registering...';
+        }
+
         fetch(window.BASE_URL + '/auth/register', {
             method: 'POST',
             body: new FormData(form)
@@ -79,10 +86,18 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
             } else {
                 showError(data.message);
+                if(submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = 'Register';
+                }
             }
         })
         .catch(() => {
             showError('Something went wrong. Please try again.');
+            if(submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerText = 'Register';
+            }
         });
     });
 

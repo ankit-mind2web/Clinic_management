@@ -165,11 +165,7 @@ class AppointmentModel extends Model
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // Backward compatible method for old controllers
-    public function getAll(): array
-    {
-        return $this->getFiltered('', '', '', '', '', 1, 1000);
-    }
+
 
     // Count all appointments (dashboard)
     public function countAll(): int

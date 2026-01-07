@@ -25,6 +25,8 @@ class AppointmentController extends Controller
         header('Content-Type: application/json');
 
         $doctorId = $_POST['doctor_id'] ?? null;
+        $date     = $_POST['date'] ?? null;
+
         if (!$doctorId) {
             echo json_encode([]);
             return;
@@ -32,7 +34,7 @@ class AppointmentController extends Controller
 
         $availabilityModel = new DoctorAvailability();
         echo json_encode(
-            $availabilityModel->getAvailableSlotsForPatient((int)$doctorId)
+            $availabilityModel->getAvailableSlotsForPatient((int)$doctorId, $date)
         );
     }
 

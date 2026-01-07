@@ -21,10 +21,22 @@ class AppointmentController extends Controller
         }
 
         $model = new AppointmentModel();
-        $appointments = $model->getAppointmentsByDoctor($doctorId);
+        
+        // AUTO-COMPLETE CHECK
+        $model->autoCompletePastAppointments($doctorId);
+
+        // Pagination
+        $page  = (int)($_GET['page'] ?? 1);
+        $limit = 10;
+        $totalItems = $model->appointmentCount($doctorId); // Reusing existing count method
+        
+        $pagination = new \App\Helpers\Pagination($totalItems, $limit, $page, '/doctor/appointments');
+
+        $appointments = $model->getAppointmentsByDoctor($doctorId, $limit, $pagination->getOffset());
 
         $this->view('doctor/appointments/index', [
-            'appointments' => $appointments
+            'appointments' => $appointments,
+            'pagination'   => $pagination->getLinks()
         ]);
     }
 
@@ -44,5 +56,33 @@ class AppointmentController extends Controller
         $this->view('doctor/appointments/view', [
             'appointment' => $appointment
         ]);
+    }
+
+    public function confirm()
+    {
+        DoctorAuth::check();
+        $doctorId = $_SESSION['user']['id'];
+        $id = (int)($_POST['id'] ?? 0);
+
+        if ($id && (new AppointmentModel())->updateStatus($id, $doctorId, 'confirmed')) {
+            // Success
+        }
+
+        header('Location: /doctor/appointments');
+        exit;
+    }
+
+    public function cancel()
+    {
+        DoctorAuth::check();
+        $doctorId = $_SESSION['user']['id'];
+        $id = (int)($_POST['id'] ?? 0);
+
+        if ($id && (new AppointmentModel())->updateStatus($id, $doctorId, 'cancelled')) {
+            // Success
+        }
+
+        header('Location: /doctor/appointments');
+        exit;
     }
 }

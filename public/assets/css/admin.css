@@ -23,10 +23,21 @@
     margin-top: 8px;
 }
 
-.bg-green { background: #00c292; }
-.bg-purple { background: #ab8ce4; }
-.bg-blue { background: #03a9f3; }
-.bg-orange { background: #fb9678; }
+.bg-green {
+    background: #00c292;
+}
+
+.bg-purple {
+    background: #ab8ce4;
+}
+
+.bg-blue {
+    background: #03a9f3;
+}
+
+.bg-orange {
+    background: #fb9678;
+}
 
 /* PANELS */
 .panels {
@@ -39,7 +50,7 @@
     background: #fff;
     border-radius: 10px;
     padding: 20px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .panel h3 {
@@ -72,12 +83,27 @@
     font-size: 11px;
     color: #eeeded;
 }
-.status.confirmed { background: #0b7041; color: #fff; }
-.status.active { background: #00c292; }
-.status.pending { background: #fb9678; }
+
+.status.confirmed {
+    background: #0b7041;
+    color: #fff;
+}
+
+.status.active {
+    background: #00c292;
+}
+
+.status.pending {
+    background: #fb9678;
+}
+
 .status.blocked {
     background: #fee2e2;
     color: #991b1b;
+}
+
+.status.completed {
+    background: #03a9f3;
 }
 
 .btn.success {

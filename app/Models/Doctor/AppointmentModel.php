@@ -35,7 +35,7 @@ class AppointmentModel extends Model
         $stmt->execute([$doctorId]);
         return (int) $stmt->fetchColumn();
     }
-     public function getAppointmentsByDoctor(int $doctorId): array
+     public function getAppointmentsByDoctor(int $doctorId, int $limit = 100, int $offset = 0): array
     {
         $sql = "
             SELECT 
@@ -49,10 +49,14 @@ class AppointmentModel extends Model
             JOIN users u ON u.id = a.patient_id
             WHERE a.doctor_id = :doctor_id
             ORDER BY a.start_utc ASC
+            LIMIT :limit OFFSET :offset
         ";
 
         $stmt = $this->db->prepare($sql);
-        $stmt->execute(['doctor_id' => $doctorId]);
+        $stmt->bindValue(':doctor_id', $doctorId, PDO::PARAM_INT);
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $stmt->execute();
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -126,5 +130,39 @@ class AppointmentModel extends Model
         $stmt->execute([$id, $doctorId]);
 
         return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+    }
+    /* =======================
+       UPDATE STATUS
+       ======================= */
+    public function updateStatus(int $appointmentId, int $doctorId, string $status): bool
+    {
+        $stmt = $this->db->prepare(
+            "UPDATE appointments 
+             SET status = :status 
+             WHERE id = :id AND doctor_id = :doctor_id"
+        );
+        
+        return $stmt->execute([
+            'status' => $status,
+            'id' => $appointmentId,
+            'doctor_id' => $doctorId
+        ]);
+    }
+
+    /* =======================
+       AUTO-COMPLETE PAST
+       ======================= */
+    public function autoCompletePastAppointments(int $doctorId): void
+    {
+        // Mark as 'completed' if status is 'confirmed' AND end time is in the past
+        // We use UTC comparison since start_utc/end_utc are stored in UTC
+        $stmt = $this->db->prepare(
+            "UPDATE appointments
+             SET status = 'completed'
+             WHERE doctor_id = :doctor_id
+               AND status = 'confirmed'
+               AND end_utc < UTC_TIMESTAMP()"
+        );
+        $stmt->execute(['doctor_id' => $doctorId]);
     }
 }

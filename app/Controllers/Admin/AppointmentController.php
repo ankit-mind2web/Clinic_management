@@ -15,11 +15,22 @@ class AppointmentController extends Controller
 
         $appointmentModel = new AppointmentModel();
 
-        $data = [
-            'appointments' => $appointmentModel->getAll()
-        ];
+        // Pagination
+        $page  = (int)($_GET['page'] ?? 1);
+        $limit = 10;
+        
+        $totalItems = $appointmentModel->countAll();
+        $pagination = new \App\Helpers\Pagination($totalItems, $limit, $page, '/admin/appointments');
 
-        $this->view('admin/appointments/index', $data);
+        $appointments = $appointmentModel->getFiltered(
+            '', '', '', '', '', // search, sort, status, from, to
+            $page, $limit
+        );
+
+        $this->view('admin/appointments/index', [
+            'appointments' => $appointments,
+            'pagination'   => $pagination->getLinks()
+        ]);
     }
 
     /* show single appointment */

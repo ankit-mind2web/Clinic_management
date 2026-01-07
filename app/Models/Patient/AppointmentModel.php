@@ -36,7 +36,7 @@ class AppointmentModel extends Model
                 INSERT INTO appointments
                     (slot_id, patient_id, doctor_id, start_utc, end_utc, status, created_at)
                 VALUES
-                    (:slot_id, :patient_id, :doctor_id, :start_utc, :end_utc, 'confirmed', NOW())
+                    (:slot_id, :patient_id, :doctor_id, :start_utc, :end_utc, 'pending', NOW())
             ");
 
             $insertStmt->execute([

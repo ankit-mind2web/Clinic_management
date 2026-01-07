@@ -109,6 +109,9 @@ $routes = [
         '/doctor/availability/store'  => [App\Controllers\Doctor\DoctorAvailabilityController::class, 'store'],
         '/doctor/availability'        => [App\Controllers\Doctor\DoctorAvailabilityController::class, 'index'],
 
+        '/doctor/appointments/confirm' => [DoctorAppointmentController::class, 'confirm'],
+        '/doctor/appointments/cancel'  => [DoctorAppointmentController::class, 'cancel'],
+
 
 
 

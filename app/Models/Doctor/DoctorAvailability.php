@@ -35,7 +35,7 @@ class DoctorAvailability extends Model
         ]);
 
         if ($stmt->rowCount() > 0) {
-            die('Overlapping availability not allowed');
+            throw new \Exception('Overlapping availability not allowed');
         }
 
         $insertSql = "
@@ -127,19 +127,35 @@ class DoctorAvailability extends Model
     /* =======================
        PATIENT VIEW (SLOTS)
        ======================= */
-    public function getAvailableSlotsForPatient(int $doctorId): array
+    /* =======================
+       PATIENT VIEW (SLOTS)
+       ======================= */
+    public function getAvailableSlotsForPatient(int $doctorId, ?string $date = null): array
     {
         $db = Database::getConnection();
 
-        $stmt = $db->prepare("
+        $sql = "
             SELECT id, start_utc, end_utc
             FROM slots
             WHERE doctor_id = :doctor_id
               AND is_blocked = 0
               AND start_utc > NOW()
-            ORDER BY start_utc
-        ");
-        $stmt->execute([':doctor_id' => $doctorId]);
+        ";
+
+        $params = [':doctor_id' => $doctorId];
+
+        if ($date) {
+            // For simplicity, we are comparing the date part of the UTC start time.
+            // Ideally, this should account for the patient's timezone.
+            // But usually in these systems, checking the date part is the first step.
+            $sql .= " AND DATE(start_utc) = :date";
+            $params[':date'] = $date;
+        }
+
+        $sql .= " ORDER BY start_utc";
+
+        $stmt = $db->prepare($sql);
+        $stmt->execute($params);
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }

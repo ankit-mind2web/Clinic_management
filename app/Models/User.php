@@ -17,9 +17,11 @@ class User extends Model
     /* Create new user */
     public function create(array $data): void
     {
+        $status = ($data['role'] === 'patient') ? 'active' : 'pending';
+
         $sql = "
             INSERT INTO users (full_name, email, mobile, password_hash, role, status)
-            VALUES (?, ?, ?, ?, ?, 'pending')
+            VALUES (?, ?, ?, ?, ?, ?)
         ";
 
         $this->db->prepare($sql)->execute([
@@ -27,7 +29,8 @@ class User extends Model
             $data['email'],
             $data['mobile'],
             $data['password'],
-            $data['role']
+            $data['role'],
+            $status
         ]);
     }
     //find all doctors
@@ -108,28 +111,26 @@ class User extends Model
     }
 
     // Doctor management (Admin)
-    public function getDoctors(): array
-{
-    $sql = "
-        SELECT 
-            u.id,
-            u.full_name,
-            u.email,
-            u.mobile,
-            u.status,
-            u.created_at,
-            p.dob
-        FROM users u
-        LEFT JOIN profile p ON p.user_id = u.id
-        WHERE u.role = 'doctor'
-        ORDER BY u.created_at DESC
-    ";
+    public function findDoctorById(int $id): ?array
+    {
+        $sql = "
+            SELECT 
+                u.id,
+                u.full_name,
+                u.email,
+                u.mobile,
+                u.status,
+                u.created_at,
+                p.dob
+            FROM users u
+            LEFT JOIN profile p ON p.user_id = u.id
+            WHERE u.role = 'doctor'
+              AND u.id = :id
+            LIMIT 1
+        ";
 
-    $stmt = $this->db->prepare($sql);
-    $stmt->execute();
-
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
+        return $this->fetch($sql, ['id' => $id]);
+    }
 
 
     /* Get pending doctors */
@@ -154,5 +155,21 @@ class User extends Model
             "UPDATE users SET status = ? WHERE id = ?"
         );
         $stmt->execute([$status, $id]);
+    }
+
+    /* PAGINATION SUPPORT */
+    public function countDoctors(): int
+    {
+        $stmt = $this->db->query("SELECT COUNT(*) FROM users WHERE role = 'doctor'");
+        return (int) $stmt->fetchColumn();
+    }
+
+    public function getDoctorsPaginated(int $limit, int $offset): array
+    {
+        $stmt = $this->db->prepare("SELECT * FROM users WHERE role = 'doctor' ORDER BY id DESC LIMIT :limit OFFSET :offset");
+        $stmt->bindValue(':limit', $limit, \PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, \PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 }

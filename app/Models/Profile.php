@@ -24,7 +24,7 @@ class Profile
         return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
     }
 
-    // insert or update profile (CORRECT)
+    // insert or update profile
     public function saveOrUpdate(int $userId, string $gender, string $dob, string $address, int $emailVerified): void
 {
     $status = $emailVerified === 1 ? 'Verified' : 'Pending';
