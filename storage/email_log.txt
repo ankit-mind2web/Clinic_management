@@ -7,3 +7,4 @@ http://localhost:3000/auth/verify-email?token=292365dcea2e34d460af0e26c97b8181e9
 http://localhost:3000/auth/verify-email?token=5daf8ec3636ab063056f115e7d3a6953acf153d8211cc3d16a52613bc10d560f
 http://localhost:3000/auth/verify-email?token=8fa109ff791789e95638e73aea02a6bbe15490fe8c1427bdd1f3681ddec0a3c0
 http://localhost:3000/auth/verify-email?token=475475bf20b46202a9d4a93e011470759093cc25c3ea887e5e9cf5905a750cad
+http://localhost:3000/auth/verify-email?token=c00d6d27e8fb138dbc81a0adfad1ceff616c45920428d3b4ea7c304aebaac7e9

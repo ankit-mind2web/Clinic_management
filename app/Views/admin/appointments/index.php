@@ -81,7 +81,6 @@ include __DIR__ . '/../layout/sidebar.php';
         </table>
 
         <!-- COMMON PAGINATION -->
-        <!-- COMMON PAGINATION -->
         <?= $pagination ?? '' ?>
 
     </div>
