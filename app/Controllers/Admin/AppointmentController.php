@@ -16,11 +16,18 @@ class AppointmentController extends Controller
         $appointmentModel = new AppointmentModel();
 
         // Pagination
-        $page  = (int)($_GET['page'] ?? 1);
-        $limit = 10;
+        $page   = (int)($_GET['page'] ?? 1);
+        $search = trim($_GET['search'] ?? ''); // Capture search
+        $limit  = 10;
+        
+        // Build base URL for persistence
+        $baseUrl = '/admin/appointments';
+        if ($search !== '') {
+            $baseUrl .= '?search=' . urlencode($search);
+        }
         
         $totalItems = $appointmentModel->countAll();
-        $pagination = new \App\Helpers\Pagination($totalItems, $limit, $page, '/admin/appointments');
+        $pagination = new \App\Helpers\Pagination($totalItems, $limit, $page, $baseUrl);
 
         $appointments = $appointmentModel->getFiltered(
             '', '', '', '', '', // search, sort, status, from, to
@@ -29,7 +36,8 @@ class AppointmentController extends Controller
 
         $this->view('admin/appointments/index', [
             'appointments' => $appointments,
-            'pagination'   => $pagination->getLinks()
+            'pagination'   => $pagination->getLinks(),
+            'search'       => $search
         ]);
     }
 

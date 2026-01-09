@@ -70,7 +70,10 @@ include __DIR__ . '/../admin/layout/sidebar.php';
         </div>
 
         <div class="panel">
-            <h3>All Doctors</h3>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                <h3 style="margin:0;">Recent Doctors</h3>
+                <a href="/admin/doctors" class="btn" style="background:#5c6bc0; color:#fff; font-size:0.8rem; padding:5px 10px;">View All</a>
+            </div>
 
             <table class="table">
                 <thead>

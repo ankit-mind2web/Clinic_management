@@ -9,7 +9,7 @@ class DoctorSpecialization extends Model
     public function getAllSpecializations()
     {
         return $this->fetchAll(
-            "SELECT id, name FROM specializations ORDER BY name"
+            "SELECT id, name, description FROM specializations ORDER BY name"
         );
     }
 
@@ -54,6 +54,14 @@ class DoctorSpecialization extends Model
              SET email_verify_token = ?, email_token_expires = ?
              WHERE id = ?",
             [$token, $expiry, $doctorId]
+        );
+    }
+    /* GET BY NAME */
+    public function getByName($name)
+    {
+        return $this->fetch(
+            "SELECT * FROM specializations WHERE name = ?",
+            [$name]
         );
     }
 }

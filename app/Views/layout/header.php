@@ -48,7 +48,9 @@ $initial = $username ? strtoupper($username[0]) : '';
 
         <!-- LOGO -->
         <div class="logo">
-            <img src="<?= BASE_URL ?>/assets/images/wellcarelogo.png" alt="WellCare Clinic Logo">
+            <a href="<?= BASE_URL ?>/">
+                <img src="<?= BASE_URL ?>/assets/images/wellcarelogo.png" alt="WellCare Clinic Logo">
+            </a>
         </div>
 
         <!-- HAMBURGER -->

@@ -17,6 +17,25 @@ class PatientController extends Controller
     {
         AdminAuth::check();
 
-        $this->view('admin/patients/index',['patients' => $this->userModel->getPatients()]);
+        $page   = (int)($_GET['page'] ?? 1);
+        $search = trim($_GET['search'] ?? '');
+        $limit  = 10;
+
+        // Build base URL for pagination (include search if present)
+        $baseUrl = '/admin/patients';
+        if ($search !== '') {
+            $baseUrl .= '?search=' . urlencode($search);
+        }
+
+        $totalItems = $this->userModel->countPatients($search);
+        $pagination = new \App\Helpers\Pagination($totalItems, $limit, $page, $baseUrl);
+
+        $patients = $this->userModel->getPatientsPaginated($limit, $pagination->getOffset(), $search);
+
+        $this->view('admin/patients/index', [
+            'patients'   => $patients,
+            'pagination' => $pagination->getLinks(),
+            'search'     => $search
+        ]);
     }
 }

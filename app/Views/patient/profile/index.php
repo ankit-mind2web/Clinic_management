@@ -104,8 +104,8 @@
                     <?php if ($isProfileComplete): ?>
                         <div class="auth-error">
                             Email not verified
-                            <form method="post" action="/profile/send-verification" style="margin-top:10px;">
-                                <button type="submit" <?= $inCooldown ? 'disabled' : '' ?>>
+                            <form id="verifyEmailForm" method="post" action="/profile/send-verification" style="margin-top:10px;">
+                                <button type="submit" id="verifyBtn" <?= $inCooldown ? 'disabled' : '' ?>>
                                     <?= $inCooldown ? "Resend in {$secondsLeft}s" : "Verify Email" ?>
                                 </button>
                             </form>

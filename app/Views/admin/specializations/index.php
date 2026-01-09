@@ -4,6 +4,7 @@ include __DIR__ . '/../layout/header.php';
 include __DIR__ . '/../layout/sidebar.php';
 ?>
 <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/specialization.css">
+<link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/admin-search.css">
 
 <div class="main">
 
@@ -58,5 +59,6 @@ include __DIR__ . '/../layout/sidebar.php';
 </div>
 
 <script src="<?= BASE_URL ?>/assets/js/specialization.js"></script>
+<script src="<?= BASE_URL ?>/assets/js/admin-search.js"></script>
 
 <?php include __DIR__ . '/../layout/footer.php'; ?>

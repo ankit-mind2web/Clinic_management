@@ -76,6 +76,7 @@ $routes = [
 
         //pages
         '/services' => [PageController::class, 'services'],
+        '/services/detail' => [PageController::class, 'serviceDetail'],
         '/contact'  => [PageController::class, 'contact'],
 
 

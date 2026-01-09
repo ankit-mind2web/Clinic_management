@@ -4,6 +4,7 @@ namespace App\Controllers\Patient;
 
 use App\Core\Controller;
 use App\Models\Profile;
+use App\Helpers\Mailer;
 
 class ProfileController extends Controller
 {
@@ -105,11 +106,27 @@ class ProfileController extends Controller
         $link   = $scheme . '://' . $host . '/auth/verify-email?token=' . $token;
 
         // mock email (log)
-        file_put_contents(
-            __DIR__ . '/../../../storage/email_log.txt',
-            $link . PHP_EOL,
-            FILE_APPEND
-        );
+        if (isset($_SESSION['user']['email'])) {
+            $email     = $_SESSION['user']['email'];
+            $fullName  = $_SESSION['user']['full_name'] ?? 'Patient';
+            
+            $emailBody = "
+                <h3>Email Verification</h3>
+                <p>Hello {$fullName},</p>
+                <p>Please verify your email by clicking the button below:</p>
+                <p>
+                    <a href='{$link}'
+                       style='display:inline-block;padding:10px 15px;
+                              background:#4b6cb7;color:#fff;
+                              text-decoration:none;border-radius:5px;'>
+                        Verify Email
+                    </a>
+                </p>
+                <p>This link will expire in 24 hours.</p>
+            ";
+
+            Mailer::send($email, 'Verify Your Email', $emailBody);
+        }
 
         header('Location: /patient/profile');
         exit;

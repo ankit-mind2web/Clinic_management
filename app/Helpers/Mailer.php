@@ -18,17 +18,13 @@ class Mailer
      */
     public static function send(string $to, string $subject, string $body): bool
     {
-        // ===========================================
-        // ⚙️ MANUAL CONFIGURATION
-        // CHANGE THESE VALUES IF NOT USING .ENV
-        // ===========================================
+        // SMTP configuration - ideally from environment variables
         $smtpHost     = $_ENV['SMTP_HOST'] ?? 'smtp.gmail.com'; // e.g. smtp.gmail.com
-        $smtpUsername = $_ENV['SMTP_USER'] ?? 'support@wellcare.com'; // Your email
-        $smtpPassword = $_ENV['SMTP_PASS'] ?? '12345abcd@'; // App Password (not login password)
+        $smtpUsername = $_ENV['SMTP_USER'] ?? 'tanggywarrior@gmail.com'; // Your email
+        $smtpPassword = $_ENV['SMTP_PASS'] ?? 'xvpablgmbipwrtxw'; // App Password 
         $smtpPort     = $_ENV['SMTP_PORT'] ?? 587;
         $fromEmail    = $_ENV['MAIL_FROM_ADDRESS'] ?? 'support@wellcare.com';
         $fromName     = $_ENV['MAIL_FROM_NAME'] ?? 'Clinic Management System';
-        // ===========================================
 
         $mail = new PHPMailer(true);
 

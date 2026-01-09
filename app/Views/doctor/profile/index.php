@@ -1,4 +1,3 @@
-<!-- app/Views/doctor/profile/index.php -->
 <!DOCTYPE html>
 <html>
 
@@ -26,7 +25,6 @@ $address = $profile['address'] ?? '';
 
 /* AGE */
 $age = '—';
-
 if (!empty($dob)) {
     $birthDate = new DateTime($dob);
     $today     = new DateTime();
@@ -34,12 +32,17 @@ if (!empty($dob)) {
     $age = $diff->y . ' years, ' . $diff->m . ' months, ' . $diff->d . ' days';
 }
 
-
 /* PROFILE COMPLETE */
 $isProfileComplete = ($gender !== '' && $dob !== '' && $address !== '');
 
 /* EDIT MODE */
 $isEditMode = isset($_GET['edit']);
+
+/* RESEND COOLDOWN (same as patient) */
+$cooldownUntil = $_SESSION['verify_cooldown_until'] ?? 0;
+$now = time();
+$inCooldown = $cooldownUntil > $now;
+$secondsLeft = max(0, $cooldownUntil - $now);
 ?>
 
 <div class="auth-wrapper">
@@ -62,8 +65,8 @@ $isEditMode = isset($_GET['edit']);
         <?php if (!$isApproved): ?>
 
             <div class="auth-error">
-                Your account is pending wait for admin approval.<br>
-                Profile editing is locked & will open after approval.
+                Your account is pending. Wait for admin approval.<br>
+                Profile editing is locked until approval.
             </div>
 
         <?php elseif (!$isEditMode): ?>
@@ -96,16 +99,32 @@ $isEditMode = isset($_GET['edit']);
                 </tr>
             </table>
 
+            <!-- EMAIL VERIFICATION -->
             <?php if ($isVerified): ?>
+
                 <div class="auth-success verified">
                     Email Verified ✔
                 </div>
+
             <?php else: ?>
+
                 <?php if ($isProfileComplete): ?>
                     <div class="auth-error">
                         Email not verified
-                        <form method="post" action="/doctor/profile/send-verification">
-                            <button type="submit">Verify Email</button>
+
+                        <form id="verifyEmailForm"
+                              method="post"
+                              action="/doctor/profile/send-verification"
+                              style="margin-top:10px;">
+
+                            <button
+                                type="submit"
+                                id="verifyBtn"
+                                <?= $inCooldown ? 'disabled' : '' ?>
+                                data-seconds-left="<?= $inCooldown ? $secondsLeft : 0 ?>"
+                            >
+                                <?= $inCooldown ? "Resend in {$secondsLeft}s" : "Verify Email" ?>
+                            </button>
                         </form>
                     </div>
                 <?php else: ?>
@@ -113,6 +132,7 @@ $isEditMode = isset($_GET['edit']);
                         Complete your profile to verify email
                     </div>
                 <?php endif; ?>
+
             <?php endif; ?>
 
         <?php else: ?>
@@ -129,7 +149,8 @@ $isEditMode = isset($_GET['edit']);
                 </select>
 
                 <label>Date of Birth</label>
-                <input type="date" name="dob"
+                <input type="date"
+                       name="dob"
                        value="<?= htmlspecialchars($dob) ?>"
                        required
                        max="<?= date('Y-m-d', strtotime('-23 years')) ?>">
@@ -146,6 +167,7 @@ $isEditMode = isset($_GET['edit']);
     </div>
 </div>
 
+<script src="/assets/js/doctor_profile.js"></script>
 <?php require_once __DIR__ . '/../../layout/footer.php'; ?>
 </body>
 </html>

@@ -53,88 +53,93 @@ $isLoggedIn = isset($_SESSION['user']);
 <section class="info-section">
     <h2>Clinic Information</h2>
     <p>
-        WellCare Clinic provides calm, clean, and patient-focused healthcare
-        with modern tools for doctors and staff.
+        WellCare Clinic provides calm, clean, and patient-focused healthcare with modern tools for doctors and staff. WellCare Clinic is dedicated to providing compassionate, patient-centered healthcare in a clean and modern environment. Our experienced doctors and staff use cutting-edge tools to ensure you receive personalized treatment plans tailored to your unique needs. We strive to make your healthcare journey smooth, comfortable, and stress-free every step of the way.
     </p>
 </section>
-
-<section class="features">
-
-    <div class="feature-card" data-specialization="cardiology">
-        ❤️
-        <h3>Cardiology</h3>
-        <p>Heart care & diagnostics</p>
-    </div>
-
-    <div class="feature-card" data-specialization="dermatology">
-        🧴
-        <h3>Dermatology</h3>
-        <p>Skin & hair treatments</p>
-    </div>
-
-    <div class="feature-card" data-specialization="orthopedics">
-        🦴
-        <h3>Orthopedics</h3>
-        <p>Bone & joint care</p>
-    </div>
-
-    <div class="feature-card" data-specialization="general">
-        🩺
-        <h3>General Medicine</h3>
-        <p>Primary healthcare</p>
-    </div>
-
-</section>
-
 <!-- DOCTORS LIST -->
 <section class="doctors-section" id="doctors">
     <h2>👨‍⚕️ Our Doctors</h2>
 
     <div class="doctor-filter-actions">
-        <button id="showAllDoctors">All Doctors</button>
+        <button id="showAllDoctors" class="active">All Doctors</button>
+        <?php if (!empty($specializations)): ?>
+            <?php foreach ($specializations as $spec): ?>
+                <?php $slug = strtolower($spec['name']); ?>
+                <button class="filter-btn" data-filter="<?= htmlspecialchars($slug) ?>">
+                    <?= htmlspecialchars($spec['name']) ?>
+                </button>
+            <?php endforeach; ?>
+        <?php endif; ?>
     </div>
 
-    <div class="doctors-grid">
-
-        <div class="doctor-card" data-specialization="cardiology">
-            <img src="/../assets/images/female_doctor.jpeg" alt="Dr. Anjali Sharma">
-            <div class="doctor-info">
-                <h3>Dr. Anjali Sharma</h3>
-                <span>Cardiologist</span>
-                <p>10+ years in heart care and diagnostics.</p>
-            </div>
+    <?php if (empty($doctors)): ?>
+        <p style="text-align:center; padding: 2rem;">No doctors found matching filters.</p>
+    <?php else: ?>
+        <div class="doctors-grid">
+            <?php foreach ($doctors as $doctor): ?>
+                <?php
+                // Determine image based on gender (fallback to 'male' if not set)
+                $gender = strtolower($doctor['gender'] ?? 'male');
+                $imgName = ($gender === 'female') ? 'female_doctor.jpeg' : 'male_doctor.jpeg';
+                // Primary specialization for display, or comma list
+                $specToShow = htmlspecialchars($doctor['primary_specialization'] ?? 'General');
+                // Slug for filtering - MATCHES THE FILTER BUTTON SLUG
+                $specSlug = strtolower($doctor['primary_specialization'] ?? 'general');
+                ?>
+                <div class="doctor-card" data-specialization="<?= htmlspecialchars($specSlug) ?>">
+                    <img src="/assets/images/<?= $imgName ?>" alt="<?= htmlspecialchars($doctor['full_name']) ?>">
+                    <div class="doctor-info">
+                        <h3>Dr. <?= htmlspecialchars($doctor['full_name']) ?></h3>
+                        <span><?= $specToShow ?></span>
+                        <p><?= htmlspecialchars($doctor['bio'] ?? '') ?></p>
+                        <?php if(!empty($doctor['experience'])): ?>
+                            <small class="exp-badge"><?= $doctor['experience'] ?>+ Years Exp</small>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            <?php endforeach; ?>
         </div>
-
-        <div class="doctor-card" data-specialization="dermatology">
-            <img src="/../assets/images/male_doctor.jpeg" alt="Dr. Rohan Mehta">
-            <div class="doctor-info">
-                <h3>Dr. Rohan Mehta</h3>
-                <span>Dermatologist</span>
-                <p>Expert in skin and cosmetic treatments.</p>
-            </div>
-        </div>
-
-        <div class="doctor-card" data-specialization="orthopedics">
-            <img src="/../assets/images/female_doctor.jpeg" alt="Dr. Neha Kapoor">
-            <div class="doctor-info">
-                <h3>Dr. Neha Kapoor</h3>
-                <span>Orthopedic Surgeon</span>
-                <p>Specialist in joint and bone care.</p>
-            </div>
-        </div>
-
-        <div class="doctor-card" data-specialization="general">
-            <img src="/../assets/images/male_doctor.jpeg" alt="Dr. Amit Verma">
-            <div class="doctor-info">
-                <h3>Dr. Amit Verma</h3>
-                <span>General Physician</span>
-                <p>Family and primary healthcare expert.</p>
-            </div>
-        </div>
-
-    </div>
+    <?php endif; ?>
 </section>
 
-<script src="/../assets/js/doctor_filter.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    const doctorCards = document.querySelectorAll('.doctor-card');
+    const showAllBtn = document.getElementById('showAllDoctors');
+    const allBtns = document.querySelectorAll('.doctor-filter-actions button');
+
+    function setActiveBtn(btn) {
+        allBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    }
+
+    // Filter Button Click
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', function () {
+            const filter = this.dataset.filter;
+            setActiveBtn(this);
+
+            doctorCards.forEach(card => {
+                if (card.dataset.specialization === filter) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    });
+
+    // Show All Click
+    if (showAllBtn) {
+        showAllBtn.addEventListener('click', function () {
+            setActiveBtn(this);
+            doctorCards.forEach(card => {
+                card.style.display = 'flex';
+            });
+        });
+    }
+});
+</script>
 
 <?php require_once __DIR__ . '/../layout/footer.php'; ?>

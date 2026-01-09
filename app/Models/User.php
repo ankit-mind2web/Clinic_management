@@ -158,18 +158,150 @@ class User extends Model
     }
 
     /* PAGINATION SUPPORT */
-    public function countDoctors(): int
+    public function countDoctors(string $search = ''): int
     {
-        $stmt = $this->db->query("SELECT COUNT(*) FROM users WHERE role = 'doctor'");
+        $search = trim($search);
+        if ($search === '') {
+            $stmt = $this->db->query("SELECT COUNT(*) FROM users WHERE role = 'doctor'");
+            return (int) $stmt->fetchColumn();
+        }
+
+        $sql = "
+            SELECT COUNT(*) 
+            FROM users 
+            WHERE role = 'doctor' 
+              AND (full_name LIKE :s OR email LIKE :s OR mobile LIKE :s)
+        ";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue(':s', "%$search%");
+        $stmt->execute();
+
         return (int) $stmt->fetchColumn();
     }
 
-    public function getDoctorsPaginated(int $limit, int $offset): array
+    public function getDoctorsPaginated(int $limit, int $offset, string $search = ''): array
     {
-        $stmt = $this->db->prepare("SELECT * FROM users WHERE role = 'doctor' ORDER BY id DESC LIMIT :limit OFFSET :offset");
+        $search = trim($search);
+        $searchSql = "";
+        $params = [];
+
+        if ($search !== '') {
+            $searchSql = "AND (u.full_name LIKE :s OR u.email LIKE :s OR u.mobile LIKE :s)";
+        }
+
+        $sql = "
+            SELECT u.*, p.dob 
+            FROM users u 
+            LEFT JOIN profile p ON p.user_id = u.id 
+            WHERE u.role = 'doctor' 
+            $searchSql
+            ORDER BY u.id DESC 
+            LIMIT :limit OFFSET :offset
+        ";
+        $stmt = $this->db->prepare($sql);
         $stmt->bindValue(':limit', $limit, \PDO::PARAM_INT);
         $stmt->bindValue(':offset', $offset, \PDO::PARAM_INT);
+        
+        if ($search !== '') {
+            $stmt->bindValue(':s', "%$search%");
+        }
+
         $stmt->execute();
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    /* PATIENT PAGINATION + SEARCH */
+    public function countPatients(string $search = ''): int
+    {
+        $search = trim($search);
+        if ($search === '') {
+            $stmt = $this->db->query("SELECT COUNT(*) FROM users WHERE role = 'patient'");
+            return (int) $stmt->fetchColumn();
+        }
+
+        $sql = "
+            SELECT COUNT(*) 
+            FROM users 
+            WHERE role = 'patient' 
+              AND (full_name LIKE :s OR email LIKE :s OR mobile LIKE :s)
+        ";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue(':s', "%$search%");
+        $stmt->execute();
+
+        return (int) $stmt->fetchColumn();
+    }
+
+    public function getPatientsPaginated(int $limit, int $offset, string $search = ''): array
+    {
+        $search = trim($search);
+        $searchSql = "";
+        $params = [];
+
+        if ($search !== '') {
+            $searchSql = "AND (u.full_name LIKE :s OR u.email LIKE :s OR u.mobile LIKE :s)";
+            $params[':s'] = "%$search%";
+        }
+
+        $sql = "
+            SELECT 
+                u.id,
+                u.full_name,
+                u.email,
+                u.mobile,
+                u.status,
+                u.created_at,
+                p.gender,
+                p.dob,
+                p.address
+            FROM users u
+            LEFT JOIN profile p ON p.user_id = u.id
+            WHERE u.role = 'patient'
+            $searchSql
+            ORDER BY u.created_at DESC
+            LIMIT :limit OFFSET :offset
+        ";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue(':limit', $limit, \PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, \PDO::PARAM_INT);
+        
+        if ($search !== '') {
+            $stmt->bindValue(':s', "%$search%");
+        }
+        
+        $stmt->execute();
+
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    
+    }
+
+    public function getPublicDoctors(int $limit = 6): array
+    {
+        $sql = "
+            SELECT 
+                u.id, 
+                u.full_name, 
+                '' as bio, 
+                MAX(ds.experience) as experience, 
+                p.gender,
+                GROUP_CONCAT(s.name SEPARATOR ', ') as specializations,
+                MAX(s.name) as primary_specialization
+            FROM users u
+            LEFT JOIN profile p ON p.user_id = u.id
+            JOIN doctor_specialization ds ON ds.doctor_id = u.id
+            JOIN specializations s ON s.id = ds.specialization_id
+            WHERE u.role = 'doctor' 
+              AND u.status = 'active'
+            GROUP BY u.id
+            ORDER BY u.created_at ASC
+            LIMIT :limit
+        ";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }

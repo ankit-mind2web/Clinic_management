@@ -5,6 +5,7 @@ namespace App\Controllers\Doctor;
 use App\Core\Controller;
 use App\Models\Doctor\DoctorSpecialization;
 use App\Models\Profile;
+use App\Helpers\Mailer;
 
 class ProfileController extends Controller
 {
@@ -75,9 +76,8 @@ class ProfileController extends Controller
         }
 
         $doctorId = $_SESSION['user']['id'];
+        $user     = $_SESSION['user'];
         $model    = new DoctorSpecialization();
-
-        // if (!$model->getByDoctorAll($doctorId)) {
         //     $_SESSION['flash_message'] = 'Add specialization before email verification';
         //     header('Location: /doctor/profile');
         //     exit;
@@ -88,6 +88,9 @@ class ProfileController extends Controller
 
         $model->saveToken($doctorId, $token, $expiry);
 
+        // set cooldown
+        $_SESSION['verify_cooldown_until'] = time() + 60;
+
         $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
             ? 'https'
             : 'http';
@@ -95,11 +98,24 @@ class ProfileController extends Controller
         $link = $scheme . '://' . $_SERVER['HTTP_HOST']
             . '/auth/verify-email?token=' . $token;
 
-        file_put_contents(
-            __DIR__ . '/../../../storage/email_log.txt',
-            $link . PHP_EOL,
-            FILE_APPEND
-        );
+        if ($user['email']) {
+            $emailBody = "
+                <h3>Email Verification</h3>
+                <p>Hello Dr. {$user['full_name']},</p>
+                <p>Please verify your email by clicking the button below:</p>
+                <p>
+                    <a href='{$link}'
+                       style='display:inline-block;padding:10px 15px;
+                              background:#4b6cb7;color:#fff;
+                              text-decoration:none;border-radius:5px;'>
+                        Verify Email
+                    </a>
+                </p>
+                <p>This link will expire in 24 hours.</p>
+            ";
+
+            Mailer::send($user['email'], 'Verify Your Email', $emailBody);
+        }
 
         $_SESSION['flash_message'] = 'Verification email sent';
         header('Location: /doctor/profile');

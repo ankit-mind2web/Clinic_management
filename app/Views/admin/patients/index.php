@@ -4,10 +4,23 @@ $title = 'Patients';
 include __DIR__ . '/../layout/header.php';
 include __DIR__ . '/../layout/sidebar.php';
 ?>
+<link rel="stylesheet" href="/assets/css/admin-search.css">
 
 <div class="main">
     <div class="topbar">
         <h2>Patients</h2>
+        <div class="search-box">
+            <form id="searchForm" method="GET" action="/admin/patients" style="display:flex; align-items:center;">
+                <input 
+                    type="text" 
+                    id="searchInput"
+                    name="search" 
+                    value="<?= htmlspecialchars($search ?? '') ?>" 
+                    placeholder="Search patients..."
+                >
+                <button type="button" id="clearSearch">&times;</button>
+            </form>
+        </div>
     </div>
 
     <div class="panel">
@@ -47,7 +60,11 @@ include __DIR__ . '/../layout/sidebar.php';
                 </tbody>
             </table>
         </div>
+        
+        <!-- Pagination -->
+        <?= $pagination ?? '' ?>
     </div>
 </div>
 
+<script src="/assets/js/admin-search.js"></script>
 <?php include __DIR__ . '/../layout/footer.php'; ?>

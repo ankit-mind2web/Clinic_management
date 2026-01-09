@@ -237,7 +237,7 @@ class AuthController extends Controller
 
         // redirect by role
         header('Location: ' . ($user['role'] === 'doctor'
-            ? '/doctor/specialization'
+            ? '/doctor/profile'
             : '/patient/profile'
         ));
         exit;

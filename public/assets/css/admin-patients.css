@@ -1,0 +1,38 @@
+/* Patient Search Box Styles */
+.search-box {
+    position: relative;
+    width: 300px;
+    /* Adjust width as needed */
+}
+
+.search-box input {
+    width: 100%;
+    padding: 8px 32px 8px 12px;
+    border-radius: 6px;
+    border: 1px solid #d1d5db;
+    font-size: 14px;
+    outline: none;
+}
+
+.search-box input:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+#clearSearch {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: none;
+    background: transparent;
+    font-size: 18px;
+    color: #6b7280;
+    cursor: pointer;
+    display: none;
+    /* Hidden by default */
+}
+
+#clearSearch:hover {
+    color: #111827;
+}

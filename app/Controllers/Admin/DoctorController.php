@@ -20,17 +20,25 @@ class DoctorController extends Controller
     {
         AdminAuth::check();
 
-        $page  = (int)($_GET['page'] ?? 1);
-        $limit = 10;
+        $page   = (int)($_GET['page'] ?? 1);
+        $search = trim($_GET['search'] ?? '');
+        $limit  = 10;
         
-        $totalItems = $this->userModel->countDoctors();
-        $pagination = new \App\Helpers\Pagination($totalItems, $limit, $page, '/admin/doctors');
+        // Build base URL for pagination
+        $baseUrl = '/admin/doctors';
+        if ($search !== '') {
+            $baseUrl .= '?search=' . urlencode($search);
+        }
         
-        $doctors = $this->userModel->getDoctorsPaginated($limit, $pagination->getOffset());
+        $totalItems = $this->userModel->countDoctors($search);
+        $pagination = new \App\Helpers\Pagination($totalItems, $limit, $page, $baseUrl);
+        
+        $doctors = $this->userModel->getDoctorsPaginated($limit, $pagination->getOffset(), $search);
 
         $this->view('admin/doctors/index', [
             'doctors'    => $doctors,
-            'pagination' => $pagination->getLinks()
+            'pagination' => $pagination->getLinks(),
+            'search'     => $search
         ]);
     }
 

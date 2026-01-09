@@ -14,12 +14,16 @@ include __DIR__ . '/../layout/sidebar.php';
 
             <!-- SEARCH -->
             <div class="search-box">
-                <input
-                    type="text"
-                    id="searchInput"
-                    placeholder="Search appointments..."
-                    data-search-columns="1,2,3">
-                <button type="button" id="clearSearch">&times;</button>
+                <form id="searchForm" method="GET" action="/admin/appointments" data-live-search="true" style="display:flex; align-items:center;">
+                    <input
+                        type="text"
+                        name="search"
+                        id="searchInput"
+                        value="<?= htmlspecialchars($search ?? '') ?>"
+                        placeholder="Search appointments..."
+                        data-search-columns="1,2,3">
+                    <button type="button" id="clearSearch">&times;</button>
+                </form>
             </div>
 
             <!-- FILTER -->
@@ -87,7 +91,9 @@ include __DIR__ . '/../layout/sidebar.php';
 </div>
 
 <!-- COMMON SEARCH + FILTER JS -->
+<link rel="stylesheet" href="/assets/css/admin-search.css">
 <script src="/assets/js/common_sort.js"></script>
+<script src="/assets/js/admin-search.js"></script>
 <script src="/assets/js/appointment_filter.js"></script>
 
 <?php include __DIR__ . '/../layout/footer.php'; ?>
