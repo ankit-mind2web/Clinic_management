@@ -23,9 +23,9 @@
         <!-- QUICK LINKS -->
         <div class="footer-col">
             <h4>Quick Links</h4>
-            <p><a href="#">About</a></p>
+            <!-- <p><a href="#">About</a></p> -->
             <p><a href="/services">Services</a></p>
-            <p><a href="#">Help</a></p>
+            <!-- <p><a href="#">Help</a></p> -->
 
         </div>
 

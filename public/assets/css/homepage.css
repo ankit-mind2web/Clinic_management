@@ -175,6 +175,18 @@
     font-weight:500;
 }
 
+.exp-badge {
+    display: inline-block;
+    background-color: #3aafa9;
+    color: white;
+    font-weight: 200;
+    font-size: 0.6rem;
+    padding: 2px 5px;
+    border-radius: 12px;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+}
+
 .doctor-info p{
     margin-top:10px;
     color:#555;

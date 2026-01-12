@@ -281,8 +281,7 @@ class User extends Model
         $sql = "
             SELECT 
                 u.id, 
-                u.full_name, 
-                '' as bio, 
+                u.full_name,  
                 MAX(ds.experience) as experience, 
                 p.gender,
                 GROUP_CONCAT(s.name SEPARATOR ', ') as specializations,

@@ -90,8 +90,7 @@ $isLoggedIn = isset($_SESSION['user']);
                     <img src="/assets/images/<?= $imgName ?>" alt="<?= htmlspecialchars($doctor['full_name']) ?>">
                     <div class="doctor-info">
                         <h3>Dr. <?= htmlspecialchars($doctor['full_name']) ?></h3>
-                        <span><?= $specToShow ?></span>
-                        <p><?= htmlspecialchars($doctor['bio'] ?? '') ?></p>
+                        <span><?= $specToShow ?></span><br>
                         <?php if(!empty($doctor['experience'])): ?>
                             <small class="exp-badge"><?= $doctor['experience'] ?>+ Years Exp</small>
                         <?php endif; ?>
